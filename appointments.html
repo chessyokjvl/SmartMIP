@@ -3,10 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบนัดหมาย - Smart MIP</title>
+  <title>ระบบนัดหมาย - Smart Ward</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .table-hover tbody tr:hover { background-color: #f8f9fa; cursor: pointer; }
+    .status-badge { width: 80px; display: inline-block; text-align: center; }
+  </style>
 </head>
 <body>
 
@@ -14,42 +17,192 @@
 <div id="app-sidebar" class="sidebar-wrapper"></div>
 
 <div class="content-wrapper">
-  <h4 class="mb-3 text-secondary fw-bold"><i class="bi bi-calendar-check text-info me-2"></i> ระบบนัดหมาย (Appointments)</h4>
+  <h4 class="mb-4 text-secondary fw-bold"><i class="bi bi-calendar-check text-info me-2"></i> ระบบตารางนัดหมายผู้ป่วย (Appointments)</h4>
   
   <div class="card shadow-sm border-0 border-top border-info border-3">
-    <div class="card-body">
-      <div class="d-flex flex-wrap justify-content-between mb-3 gap-2">
-        <input type="date" class="form-control w-auto" id="appointmentDate">
-        <button class="btn btn-info text-white fw-bold"><i class="bi bi-plus-circle me-1"></i> เพิ่มนัดหมายใหม่</button>
+    <div class="card-body p-4">
+      
+      <div class="row g-3 mb-4 align-items-end">
+        <div class="col-md-3">
+          <label class="form-label small fw-bold text-muted">เลือกวันที่นัดหมาย</label>
+          <input type="date" class="form-control" id="filterDate">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small fw-bold text-muted">คลินิก / แผนก</label>
+          <select class="form-select">
+            <option>คลินิกจิตเวชทั่วไป</option>
+            <option>คลินิกบำบัดสารเสพติด (บสต.)</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small fw-bold text-muted">ค้นหา HN / ชื่อ</label>
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="ระบุคำค้นหา...">
+            <button class="btn btn-outline-secondary"><i class="bi bi-search"></i></button>
+          </div>
+        </div>
+        <div class="col-md-2 text-end">
+          <button class="btn btn-info text-white fw-bold w-100" onclick="openAddModal()"><i class="bi bi-plus-circle me-1"></i> ลงนัดใหม่</button>
+        </div>
       </div>
+
       <div class="table-responsive">
-        <table class="table table-striped table-hover mt-3 align-middle">
-          <thead class="table-dark">
-            <tr><th>เวลา</th><th>HN</th><th>ชื่อผู้ป่วย (เข้ารหัส)</th><th>ประเภทนัด</th><th>สถานะ</th><th>จัดการ</th></tr>
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light text-center">
+            <tr>
+              <th>เวลา</th>
+              <th>HN</th>
+              <th>กลุ่มโรค (Tag)</th>
+              <th>ประเภทการนัด</th>
+              <th>สถานะ</th>
+              <th>จัดการ</th>
+            </tr>
           </thead>
           <tbody>
             <tr>
-              <td>09:00 น.</td><td>12345/66</td><td>**ปกปิดข้อมูล**</td><td>นัดประเมิน BPRS (Phase 4)</td>
-              <td><span class="badge bg-warning text-dark">รอตรวจ</span></td>
-              <td><button class="btn btn-sm btn-outline-primary">เปิดดู</button></td>
+              <td class="text-center">09:00</td>
+              <td class="fw-bold text-primary">12345/66</td>
+              <td class="text-center"><span class="badge bg-primary">MIP</span></td>
+              <td>ติดตามอาการ บสต. (Phase 4)</td>
+              <td class="text-center"><span class="badge bg-success status-badge">มาตามนัด</span></td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-info fw-bold" onclick="viewAppt('12345/66', 'MIP', 'ติดตามอาการ บสต. (Phase 4)', 'นพ.ใจดี รักษาเก่ง', 'ผู้ป่วยให้ความร่วมมือดี ตรวจปัสสาวะตามแผน')">
+                  <i class="bi bi-eye"></i> เปิดดู
+                </button>
+              </td>
             </tr>
             <tr>
-              <td>10:30 น.</td><td>67890/66</td><td>**ปกปิดข้อมูล**</td><td>ติดตามผลปัสสาวะ</td>
-              <td><span class="badge bg-success">ตรวจแล้ว</span></td>
-              <td><button class="btn btn-sm btn-outline-primary">เปิดดู</button></td>
+              <td class="text-center">10:30</td>
+              <td class="fw-bold text-success">67890/65</td>
+              <td class="text-center"><span class="badge bg-success">Schiz</span></td>
+              <td>รับยาต่อเนื่อง</td>
+              <td class="text-center"><span class="badge bg-warning text-dark status-badge">รอตรวจ</span></td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-info fw-bold" onclick="viewAppt('67890/65', 'Schiz', 'รับยาต่อเนื่อง', 'พญ.สมใจ ห่วงใย', 'ประเมิน BPRS และรับยาเดิม')">
+                  <i class="bi bi-eye"></i> เปิดดู
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td class="text-center">13:00</td>
+              <td class="fw-bold text-secondary">11223/66</td>
+              <td class="text-center"><span class="badge bg-secondary">Others</span></td>
+              <td>ประเมินอาการซึมเศร้า</td>
+              <td class="text-center"><span class="badge bg-danger status-badge">ขาดนัด</span></td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-info fw-bold" onclick="viewAppt('11223/66', 'Others', 'ประเมินอาการซึมเศร้า', 'นพ.ใจดี รักษาเก่ง', 'โทรติดตามญาติแล้ว แจ้งว่าไม่สะดวกมา')">
+                  <i class="bi bi-eye"></i> เปิดดู
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="viewApptModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-info text-white border-0">
+        <h5 class="modal-title fw-bold"><i class="bi bi-calendar2-check text-white me-2"></i> รายละเอียดการนัดหมาย</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4 bg-light">
+        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+          <h4 class="fw-bold text-dark mb-0">HN: <span id="md_hn" class="text-primary"></span></h4>
+          <span id="md_tag"></span>
+        </div>
+        
+        <div class="mb-3">
+          <label class="small text-muted fw-bold">ประเภทการนัดหมาย</label>
+          <div class="fw-bold fs-6" id="md_type"></div>
+        </div>
+        <div class="mb-3">
+          <label class="small text-muted fw-bold">แพทย์/ผู้รับผิดชอบ</label>
+          <div class="fs-6" id="md_doctor"></div>
+        </div>
+        <div class="mb-4">
+          <label class="small text-muted fw-bold">รายละเอียด / Note</label>
+          <div class="p-3 bg-white border rounded shadow-sm text-secondary" id="md_note"></div>
+        </div>
+
+        <div class="d-grid gap-2">
+          <button class="btn btn-primary fw-bold" onclick="goToPatientBoard()"><i class="bi bi-clipboard2-pulse"></i> ทำแบบประเมินผู้ป่วยรายนี้</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addApptModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold"><i class="bi bi-calendar-plus text-info me-2"></i> ลงนัดหมายใหม่</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3"><label class="form-label small fw-bold">HN ผู้ป่วย</label><input type="text" class="form-control" placeholder="ระบุ HN"></div>
+        <div class="mb-3"><label class="form-label small fw-bold">วันที่นัด</label><input type="date" class="form-control"></div>
+        <div class="mb-3"><label class="form-label small fw-bold">สาเหตุการนัด</label><input type="text" class="form-control" placeholder="เช่น ติดตามผล บสต."></div>
+        <button class="btn btn-info text-white fw-bold w-100" data-bs-dismiss="modal" onclick="alert('จำลองการบันทึกคิวนัดสำเร็จ!')"><i class="bi bi-save"></i> บันทึกคิวนัด</button>
       </div>
     </div>
   </div>
 </div>
 
 <script src="app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+  // ตั้งค่าวันที่เริ่มต้นเป็นวันนี้
   document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById('appointmentDate').valueAsDate = new Date();
+    document.getElementById('filterDate').valueAsDate = new Date();
   });
+
+  // ประกาศตัวแปร Modal
+  let viewModal;
+  let addModal;
+
+  // ฟังก์ชันเปิดดูรายละเอียด
+  function viewAppt(hn, tag, type, doctor, note) {
+    // 1. นำข้อมูลไปหยอดใส่กล่องใน Modal
+    document.getElementById('md_hn').innerText = hn;
+    document.getElementById('md_type').innerText = type;
+    document.getElementById('md_doctor').innerText = doctor;
+    document.getElementById('md_note').innerText = note;
+    
+    // ตั้งค่าสี Tag
+    let badgeColor = tag === 'MIP' ? 'bg-primary' : (tag === 'Schiz' ? 'bg-success' : 'bg-secondary');
+    document.getElementById('md_tag').innerHTML = `<span class="badge ${badgeColor} fs-6">${tag}</span>`;
+
+    // 2. เรียกเปิด Modal
+    if (!viewModal) {
+      viewModal = new bootstrap.Modal(document.getElementById('viewApptModal'));
+    }
+    viewModal.show();
+  }
+
+  // ฟังก์ชันเปิด Modal ลงนัดใหม่
+  function openAddModal() {
+    if (!addModal) {
+      addModal = new bootstrap.Modal(document.getElementById('addApptModal'));
+    }
+    addModal.show();
+  }
+
+  // ฟังก์ชันเชื่อมโยงระบบ: กดจากหน้านัดหมาย ให้พุ่งไปหากระดานผู้ป่วยเลย
+  function goToPatientBoard() {
+    const hn = document.getElementById('md_hn').innerText;
+    
+    // ฝาก HN ไว้ใน Session
+    sessionStorage.setItem('searchHN', hn); 
+    
+    // สลับไปหน้ากระดานผู้ป่วย
+    window.location.href = 'patients.html';
+  }
 </script>
 </body>
 </html>
