@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ลงทะเบียน & คัดกรอง 3S - JVL</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+<body>
+
+<div id="app-header"></div>
+<div id="app-sidebar" class="sidebar-wrapper"></div>
+
+<div class="content-wrapper">
+  <h4 class="mb-3 text-secondary fw-bold"><i class="bi bi-person-bounding-box text-primary me-2"></i> ลงทะเบียนและคัดกรองแรกรับ (Admit & 3S)</h4>
+  
+  <div class="card shadow-sm border-0 border-top border-primary border-4 mb-4">
+    <div class="card-body p-4">
+      
+      <h5 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="bi bi-1-circle-fill text-primary me-2"></i> ส่วนที่ 1: ข้อมูลผู้ป่วยแรกรับ (Admission)</h5>
+      <div class="row mb-4">
+        <div class="col-md-3 mb-3"><label class="fw-bold text-muted small">HN ผู้ป่วย</label><input type="text" id="admit_hn" class="form-control" placeholder="ระบุ HN"></div>
+        <div class="col-md-3 mb-3"><label class="fw-bold text-muted small">วันที่ Admit</label><input type="date" id="admit_date" class="form-control"></div>
+        <div class="col-md-3 mb-3"><label class="fw-bold text-muted small">หอผู้ป่วยที่รับไว้</label>
+          <select class="form-select" id="admit_ward"><option value="">-- เลือกหอผู้ป่วย --</option><option>หอผู้ป่วยจิตเวชชาย 1</option><option>หอผู้ป่วยจิตเวชหญิง 1</option><option>ER</option></select>
+        </div>
+        <div class="col-md-3 mb-3"><label class="fw-bold text-muted small">ผู้ลงทะเบียน</label><input type="text" id="admit_staff" class="form-control" readonly></div>
+      </div>
+
+      <h5 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="bi bi-2-circle-fill text-primary me-2"></i> ส่วนที่ 2: แบบประเมินคัดกรอง 3S (Mock-up)</h5>
+      <div class="alert alert-info border-0 shadow-sm small"><i class="bi bi-info-circle me-2"></i> ส่วนนี้เป็นการจำลองเกณฑ์ 3S เพื่อใช้ในการแยก Clinical Pathway (สามารถนำรายละเอียดข้อคำถามจริงมาใส่แทนที่ได้ในภายหลัง)</div>
+      
+      <div class="p-3 bg-light rounded mb-4">
+        <label class="fw-bold mb-2">กรุณาเลือกอาการหลักที่พบเด่นชัดที่สุดจากการซักประวัติ:</label>
+        
+        <div class="form-check mb-2">
+          <input class="form-check-input s3-radio" type="radio" name="s3_criteria" value="SMI-V" id="c1" onchange="evaluatePathway()">
+          <label class="form-check-label text-danger fw-bold" for="c1">มีพฤติกรรมรุนแรง อาละวาด ก้าวร้าว เสี่ยงทำร้ายตนเองหรือผู้อื่นสูงมาก</label>
+        </div>
+        
+        <div class="form-check mb-2">
+          <input class="form-check-input s3-radio" type="radio" name="s3_criteria" value="MIP" id="c2" onchange="evaluatePathway()">
+          <label class="form-check-label text-primary fw-bold" for="c2">มีประวัติการใช้สารเสพติด (โดยเฉพาะเมทแอมเฟตามีน) และมีอาการทางจิตร่วมด้วย</label>
+        </div>
+        
+        <div class="form-check mb-2">
+          <input class="form-check-input s3-radio" type="radio" name="s3_criteria" value="SCHIZO" id="c3" onchange="evaluatePathway()">
+          <label class="form-check-label text-success fw-bold" for="c3">มีอาการทางจิตชัดเจน (หูแว่ว หลงผิด) โดยไม่มีประวัติการใช้สารเสพติด</label>
+        </div>
+        
+        <div class="form-check mb-2">
+          <input class="form-check-input s3-radio" type="radio" name="s3_criteria" value="GENERAL" id="c4" onchange="evaluatePathway()">
+          <label class="form-check-label text-secondary fw-bold" for="c4">ผู้ป่วยจิตเวชทั่วไป (ซึมเศร้า วิตกกังวล ฯลฯ)</label>
+        </div>
+      </div>
+
+      <h5 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="bi bi-3-circle-fill text-primary me-2"></i> ส่วนที่ 3: สรุปแนวทางการดูแล (Clinical Pathway)</h5>
+      
+      <div class="card border-0 shadow-sm" style="background-color: #f8f9fa;" id="pathway_result_box">
+        <div class="card-body text-center py-4">
+          <h5 class="text-muted mb-0" id="pathway_placeholder">กรุณาทำแบบประเมิน 3S เพื่อประมวลผล Pathway</h5>
+          
+          <div id="pathway_display" style="display: none;">
+            <h6 class="fw-bold mb-2">ผู้ป่วยรายนี้เข้าสู่กระบวนการดูแลกลุ่ม:</h6>
+            <h2 class="fw-bold mb-3" id="pathway_name">-</h2>
+            <div id="pathway_desc" class="small mb-4">-</div>
+            <button class="btn btn-lg fw-bold px-5" id="btnRegister" onclick="registerPatient()"><i class="bi bi-person-add me-2"></i> ลงทะเบียนเข้าสู่ระบบ</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  // โหลดวันที่และชื่อผู้ใช้งานอัตโนมัติ
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById('admit_date').valueAsDate = new Date();
+    setTimeout(() => {
+      const staffName = sessionStorage.getItem('userName');
+      if(staffName) document.getElementById('admit_staff').value = staffName;
+    }, 500);
+  });
+
+  // ฟังก์ชันประมวลผล 3S สู่ Pathway
+  function evaluatePathway() {
+    const selected = document.querySelector('input[name="s3_criteria"]:checked').value;
+    const placeholder = document.getElementById('pathway_placeholder');
+    const displayBox = document.getElementById('pathway_display');
+    const nameEl = document.getElementById('pathway_name');
+    const descEl = document.getElementById('pathway_desc');
+    const btnReg = document.getElementById('btnRegister');
+    const resultBox = document.getElementById('pathway_result_box');
+
+    placeholder.style.display = 'none';
+    displayBox.style.display = 'block';
+
+    if (selected === 'MIP') {
+      nameEl.innerText = 'กลุ่มโรคจิตจากเมทแอมเฟตามีน (MIP)';
+      nameEl.className = 'fw-bold mb-3 text-primary';
+      descEl.innerHTML = 'ระบบจะส่งข้อมูลผู้ป่วยเข้าสู่ <strong>Smart MIP Care System (5-Phase Pathway)</strong> อัตโนมัติ';
+      btnReg.className = 'btn btn-primary btn-lg fw-bold px-5 text-white';
+      resultBox.style.backgroundColor = '#e7f1ff'; // สีฟ้าอ่อน
+      resultBox.style.border = '2px solid #0d6efd';
+    } 
+    else if (selected === 'SMI-V') {
+      nameEl.innerText = 'กลุ่มจิตเวชเสี่ยงรุนแรง (SMI-V)';
+      nameEl.className = 'fw-bold mb-3 text-danger';
+      descEl.innerHTML = 'ระบบจะส่งข้อมูลผู้ป่วยเข้าสู่ <strong>SMI-V Fast Track & High Alert System</strong>';
+      btnReg.className = 'btn btn-danger btn-lg fw-bold px-5 text-white';
+      resultBox.style.backgroundColor = '#fce5e5'; // สีแดงอ่อน
+      resultBox.style.border = '2px solid #dc3545';
+    }
+    else if (selected === 'SCHIZO') {
+      nameEl.innerText = 'กลุ่มโรคจิตเภท (Schizophrenia)';
+      nameEl.className = 'fw-bold mb-3 text-success';
+      descEl.innerHTML = 'ระบบจะส่งข้อมูลผู้ป่วยเข้าสู่ <strong>Schizophrenia Care Map (กำลังพัฒนา)</strong>';
+      btnReg.className = 'btn btn-success btn-lg fw-bold px-5 text-white';
+      resultBox.style.backgroundColor = '#e8f5e9'; // สีเขียวอ่อน
+      resultBox.style.border = '2px solid #198754';
+    }
+    else {
+      nameEl.innerText = 'กลุ่มผู้ป่วยจิตเวชทั่วไป (General)';
+      nameEl.className = 'fw-bold mb-3 text-secondary';
+      descEl.innerHTML = 'เข้ารับการดูแลตามมาตรฐานหอผู้ป่วยปกติ';
+      btnReg.className = 'btn btn-secondary btn-lg fw-bold px-5 text-white';
+      resultBox.style.backgroundColor = '#f8f9fa'; 
+      resultBox.style.border = '2px solid #6c757d';
+    }
+  }
+
+  function registerPatient() {
+    const hn = document.getElementById('admit_hn').value;
+    const pathway = document.querySelector('input[name="s3_criteria"]:checked').value;
+    if(!hn) { alert('กรุณาระบุ HN ผู้ป่วย'); return; }
+
+    // จำลองการบันทึก
+    alert(`ลงทะเบียนผู้ป่วย HN: ${hn} เข้าสู่กลุ่ม ${pathway} สำเร็จ!\n(ในอนาคตจะเชื่อมต่อ API เพื่อนำข้อมูลเข้าฐานข้อมูลและเชื่อมโยงกับหน้า Dashboard ครับ)`);
+    
+    // เคลียร์ฟอร์ม
+    document.getElementById('admit_hn').value = '';
+    document.querySelectorAll('.s3-radio').forEach(r => r.checked = false);
+    document.getElementById('pathway_display').style.display = 'none';
+    document.getElementById('pathway_placeholder').style.display = 'block';
+    document.getElementById('pathway_result_box').style.backgroundColor = '#f8f9fa';
+    document.getElementById('pathway_result_box').style.border = 'none';
+  }
+</script>
+</body>
+</html>
