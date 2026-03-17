@@ -33,16 +33,35 @@
         <div class="tab-pane fade show active" id="tabAdmit">
           <h5 class="fw-bold text-dark mb-3"><i class="bi bi-person-lines-fill"></i> ระบบลงทะเบียนและจำหน่ายผู้ป่วย MIP (เพื่อคำนวณ Re-admission)</h5>
           <div class="row">
-            <div class="col-md-6 mb-3"><label class="fw-bold text-muted small">HN ผู้ป่วย</label><input type="text" class="form-control" placeholder="ระบุ HN"></div>
-            <div class="col-md-6 mb-3"><label class="fw-bold text-muted small">สถานะ</label>
-              <select class="form-select"><option value="admit">รับใหม่ (Admission)</option><option value="discharge">จำหน่าย (Discharge)</option></select>
+            <div class="col-md-6 mb-3"><label class="fw-bold text-muted small">HN ผู้ป่วย</label>
+              <input type="text" id="reg_hn" class="form-control" placeholder="ระบุ HN">
             </div>
-            <div class="col-md-6 mb-3"><label class="fw-bold text-muted small">วันที่ดำเนินการ</label><input type="date" class="form-control"></div>
-            <div class="col-md-6 mb-3"><label class="fw-bold text-muted small">ประเภทการจำหน่าย (เฉพาะกรณี Discharge)</label>
-              <select class="form-select"><option value="">-- เลือก --</option><option value="improved">กลับบ้าน (Improved)</option><option value="refer">ส่งต่อ (Refer)</option><option value="escape">หนีกลับ (Escape)</option></select>
+            <div class="col-md-6 mb-3"><label class="fw-bold text-muted small">สถานะการบันทึก</label>
+              <select class="form-select" id="reg_status" onchange="toggleDischargeFields()">
+                <option value="admit">รับใหม่เข้าหอผู้ป่วย (Admission)</option>
+                <option value="discharge">จำหน่ายผู้ป่วยกลับบ้าน (Discharge)</option>
+              </select>
+            </div>
+            
+            <div class="col-md-6 mb-3 admit-field"><label class="fw-bold text-muted small">วันที่รับเข้า (Admit Date)</label>
+              <input type="date" id="reg_admit_date" class="form-control">
+            </div>
+            <div class="col-md-6 mb-3 admit-field"><label class="fw-bold text-muted small">หอผู้ป่วย</label>
+              <select class="form-select" id="reg_ward"><option>หอผู้ป่วยจิตเวชชาย 1</option><option>หอผู้ป่วยจิตเวชหญิง 1</option></select>
+            </div>
+
+            <div class="col-md-6 mb-3 discharge-field" style="display:none;"><label class="fw-bold text-muted small">วันที่จำหน่าย (Discharge Date)</label>
+              <input type="date" id="reg_dc_date" class="form-control">
+            </div>
+            <div class="col-md-6 mb-3 discharge-field" style="display:none;"><label class="fw-bold text-muted small">ประเภทการจำหน่าย</label>
+              <select class="form-select" id="reg_dc_type">
+                <option value="Improved">กลับบ้าน (Improved)</option>
+                <option value="Refer">ส่งต่อ (Refer)</option>
+                <option value="Escape">หนีกลับ (Escape)</option>
+              </select>
             </div>
           </div>
-          <button class="btn btn-dark"><i class="bi bi-save"></i> บันทึกข้อมูลทะเบียน</button>
+          <button class="btn btn-dark" id="btnSubmitReg" onclick="submitRegistration()"><i class="bi bi-save"></i> บันทึกข้อมูลทะเบียน</button>
         </div>
 
         <div class="tab-pane fade" id="tab1">
@@ -50,7 +69,7 @@
           <div class="row"><div class="col-md-6 mb-3"><label class="fw-bold text-muted small">HN ผู้ป่วย</label><input type="text" class="form-control"></div><div class="col-md-6 mb-3"><label class="fw-bold text-muted small">วันที่เกิดเหตุ</label><input type="date" class="form-control"></div></div>
           <label class="fw-bold text-muted small">ประเภทอุบัติการณ์ที่เกิดขึ้นจริง (KPI Defect)</label>
           <select class="form-select mb-3 w-100 w-md-50"><option value="">-- เลือกอุบัติการณ์ --</option><option value="S">พยายามฆ่าตัวตาย (S)</option><option value="A">เกิดอุบัติเหตุพลัดตกหกล้ม (A)</option><option value="V">ทำร้ายผู้อื่น/ทรัพย์สินเสียหาย (V)</option><option value="E">หลบหนีสำเร็จ (E)</option></select>
-          <button class="btn btn-danger"><i class="bi bi-save"></i> บันทึกอุบัติการณ์</button>
+          <button class="btn btn-danger" onclick="alert('รอการเชื่อมต่อ API แบบฟอร์มอื่นๆ')"><i class="bi bi-save"></i> บันทึกอุบัติการณ์</button>
         </div>
 
         <div class="tab-pane fade" id="tab7">
@@ -58,7 +77,7 @@
           <div class="row"><div class="col-md-6 mb-3"><label class="fw-bold text-muted small">HN ผู้ป่วย</label><input type="text" class="form-control"></div><div class="col-md-6 mb-3"><label class="fw-bold text-muted small">ผู้รับการประเมิน</label><input type="text" class="form-control" placeholder="ชื่อญาติ"></div></div>
           <label class="fw-bold text-muted small">ผลการประเมินความพร้อม (KPI: % ญาติผ่านเกณฑ์)</label>
           <select class="form-select mb-3 w-100 w-md-50"><option value="pass">ผ่านเกณฑ์ (เข้าใจการดูแลและรับยากลับบ้าน)</option><option value="fail">ไม่ผ่านเกณฑ์ (ต้องให้สุขศึกษาซ้ำ)</option></select>
-          <button class="btn btn-success"><i class="bi bi-save"></i> บันทึกผล D-METHOD</button>
+          <button class="btn btn-success" onclick="alert('รอการเชื่อมต่อ API แบบฟอร์มอื่นๆ')"><i class="bi bi-save"></i> บันทึกผล D-METHOD</button>
         </div>
 
         <div class="tab-pane fade" id="tab4">
@@ -75,7 +94,7 @@
             <label class="fw-bold text-primary small">3. ความร่วมมือในการใช้ยา (Medication Adherence)</label>
             <select class="form-select"><option value="good">รับประทานยาสม่ำเสมอ (>80%)</option><option value="poor">รับประทานยาไม่สม่ำเสมอ/ขาดยา</option></select>
           </div></div>
-          <button class="btn btn-info text-white fw-bold"><i class="bi bi-save"></i> บันทึกผลติดตาม บสต.</button>
+          <button class="btn btn-info text-white fw-bold" onclick="alert('รอการเชื่อมต่อ API แบบฟอร์มอื่นๆ')"><i class="bi bi-save"></i> บันทึกผลติดตาม บสต.</button>
         </div>
 
         <div class="tab-pane fade" id="tab6">
@@ -83,7 +102,7 @@
           <div class="row"><div class="col-md-6 mb-3"><label class="fw-bold text-muted small">HN ผู้ป่วย</label><input type="text" class="form-control"></div><div class="col-md-6 mb-3"><label class="fw-bold text-muted small">วันที่ติดตาม</label><input type="date" class="form-control"></div></div>
           <label class="fw-bold text-muted small">สถานะปัจจุบัน (KPI: Employment Rate)</label>
           <select class="form-select mb-3 w-100 w-md-50"><option value="work">ประกอบอาชีพ / ศึกษาต่อ (ฟื้นฟูสำเร็จ)</option><option value="nowork">ว่างงาน / อยู่บ้าน</option><option value="jail">ต้องโทษ / สถาบันอื่น</option></select>
-          <button class="btn btn-primary"><i class="bi bi-save"></i> บันทึก Recovery</button>
+          <button class="btn btn-primary" onclick="alert('รอการเชื่อมต่อ API แบบฟอร์มอื่นๆ')"><i class="bi bi-save"></i> บันทึก Recovery</button>
         </div>
 
         <div class="tab-pane fade" id="tabOther">
@@ -92,7 +111,7 @@
           <div class="row"><div class="col-md-6 mb-3"><label class="fw-bold text-muted small">HN ผู้ป่วย</label><input type="text" class="form-control"></div><div class="col-md-6 mb-3"><label class="fw-bold text-muted small">วันที่เกิดความคลาดเคลื่อน</label><input type="date" class="form-control"></div></div>
           <label class="fw-bold text-muted small">ระดับความรุนแรง (Severity Level)</label>
           <select class="form-select mb-3 w-100 w-md-50"><option value="A">A: เกิดเหตุการณ์แต่ยังไม่ถึงผู้ป่วย</option><option value="C">C: ถึงผู้ป่วยแต่ไม่เป็นอันตราย</option><option value="E">E: เกิดอันตรายชั่วคราวต้องรักษา</option><option value="I">I: เสียชีวิต</option></select>
-          <button class="btn btn-secondary"><i class="bi bi-save"></i> บันทึก Med Error</button>
+          <button class="btn btn-secondary" onclick="alert('รอการเชื่อมต่อ API แบบฟอร์มอื่นๆ')"><i class="bi bi-save"></i> บันทึก Med Error</button>
         </div>
 
       </div>
@@ -102,5 +121,72 @@
 
 <script src="app.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // โหลดวันที่ปัจจุบันอัตโนมัติ
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById('reg_admit_date').valueAsDate = new Date();
+    document.getElementById('reg_dc_date').valueAsDate = new Date();
+  });
+
+  // ฟังก์ชันสลับการแสดงผลช่องกรอกข้อมูลระหว่าง Admit กับ Discharge
+  function toggleDischargeFields() {
+    const status = document.getElementById('reg_status').value;
+    const admitFields = document.querySelectorAll('.admit-field');
+    const dcFields = document.querySelectorAll('.discharge-field');
+
+    if (status === 'discharge') {
+      admitFields.forEach(el => el.style.display = 'none');
+      dcFields.forEach(el => el.style.display = 'block');
+    } else {
+      admitFields.forEach(el => el.style.display = 'block');
+      dcFields.forEach(el => el.style.display = 'none');
+    }
+  }
+
+  // ฟังก์ชันส่งข้อมูลไปให้ API (แยก 2 เส้นทาง)
+  async function submitRegistration() {
+    const hn = document.getElementById('reg_hn').value;
+    const status = document.getElementById('reg_status').value;
+    const staffName = sessionStorage.getItem('userName') || 'ไม่ระบุชื่อ';
+    
+    if(!hn) { alert("กรุณาระบุ HN ผู้ป่วย"); return; }
+    
+    const btn = document.getElementById('btnSubmitReg');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> กำลังบันทึก...';
+
+    let payload = {};
+    let actionName = '';
+
+    if (status === 'admit') {
+      actionName = 'registerAdmission';
+      payload = {
+        hn: hn,
+        admitDate: document.getElementById('reg_admit_date').value,
+        ward: document.getElementById('reg_ward').value,
+        s3Result: 'MIP', // ดึงมาจากหน้าคัดกรองในระบบจริง
+        pathway: 'Smart MIP Care System',
+        staffName: staffName
+      };
+    } else {
+      actionName = 'dischargePatient';
+      payload = {
+        hn: hn,
+        dischargeDate: document.getElementById('reg_dc_date').value,
+        dischargeType: document.getElementById('reg_dc_type').value,
+        staffName: staffName
+      };
+    }
+
+    // เรียกฟังก์ชัน callAPI ที่อยู่ใน app.js
+    const res = await callAPI(actionName, payload);
+    alert(res.message || "เกิดข้อผิดพลาดในการเชื่อมต่อ");
+    
+    if(res.success){
+      document.getElementById('reg_hn').value = '';
+    }
+    
+    btn.disabled = false; btn.innerHTML = '<i class="bi bi-save"></i> บันทึกข้อมูลทะเบียน';
+  }
+</script>
 </body>
 </html>
