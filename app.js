@@ -108,13 +108,11 @@ function renderLayout() {
 // --- ส่วนที่ 2: SHARED CLINICAL TOOLS (เครื่องมือส่วนกลาง) ---
   if (['General', 'Admin', 'GodAdmin'].includes(role)) {
     menuHTML += `
-      <li class="header mt-3 px-3 pb-1 text-muted small fw-bold">เครื่องมือปฏิบัติการทางคลินิก</li>
-      <li><a href="admission_3s.html" class="nav-link ${activeClass('admission_3s.html')} fw-bold text-dark bg-light border-start border-primary border-4"><i class="bi bi-person-bounding-box text-primary"></i> 1. ลงทะเบียนแรกรับ (ติด Tag)</a></li>
-      <li><a href="aws.html" class="nav-link ${activeClass('aws.html')}"><i class="bi bi-thermometer-half text-danger"></i> 2. ประเมิน AWS <small class="text-muted">(เฉพาะ MIP)</small></a></li>
-      <li><a href="save.html" class="nav-link ${activeClass('save.html')}"><i class="bi bi-exclamation-triangle text-danger"></i> 3. ประเมิน SAVE <small class="text-muted">(ทุกกลุ่ม)</small></a></li>
-      <li><a href="bprs.html" class="nav-link ${activeClass('bprs.html')}"><i class="bi bi-clipboard2-pulse text-warning"></i> 4. ประเมิน BPRS <small class="text-muted">(MIP/Schiz)</small></a></li>
-      <li><a href="records.html" class="nav-link ${activeClass('records.html')}"><i class="bi bi-journal-text text-secondary"></i> 5. ศูนย์รวมแบบบันทึก <small class="text-muted">(ทุกกลุ่ม)</small></a></li>
-      <li><a href="appointments.html" class="nav-link ${activeClass('appointments.html')}"><i class="bi bi-calendar-check text-info"></i> 6. ระบบนัดหมาย</a></li>
+      <li class="header mt-3 px-3 pb-1 text-muted small fw-bold">ปฏิบัติการทางคลินิก</li>
+      <li><a href="admission_3s.html" class="nav-link ${activeClass('admission_3s.html')} fw-bold text-dark border-bottom border-primary"><i class="bi bi-person-bounding-box text-primary"></i> 1. ลงทะเบียนแรกรับ (Admit)</a></li>
+      <li><a href="patients.html" class="nav-link ${activeClass('patients.html')} fw-bold text-white bg-primary"><i class="bi bi-people-fill text-white"></i> 2. กระดานรายชื่อผู้ป่วย (Ward Board)</a></li>
+      <li><a href="records.html" class="nav-link ${activeClass('records.html')}"><i class="bi bi-journal-text text-secondary"></i> 3. ศูนย์รวมแบบบันทึกอิสระ</a></li>
+      <li><a href="appointments.html" class="nav-link ${activeClass('appointments.html')}"><i class="bi bi-calendar-check text-info"></i> 4. ระบบนัดหมาย</a></li>
     `;
   }
 
