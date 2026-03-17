@@ -6,21 +6,112 @@
   <title>Smart MIP Care System</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { background-color: #f4f7f6; font-family: 'Sarabun', sans-serif; }
+    body { 
+      background-color: #ecf0f5; /* สีพื้นหลังสไตล์โปรแกรม รพ. */
+      font-family: 'Sarabun', sans-serif; 
+      overflow-x: hidden;
+    }
     
-    /* Login Box Styles */
-    #loginScreen { height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%); padding: 20px; }
-    .login-box { background: white; padding: 40px 30px; border-radius: 15px; width: 100%; max-width: 420px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    /* ================= LOGIN SCREEN ================= */
+    #loginScreen { 
+      height: 100vh; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); 
+      padding: 20px; 
+    }
+    .login-box { 
+      background: rgba(255, 255, 255, 0.95); 
+      padding: 40px 40px; 
+      border-radius: 20px; 
+      width: 100%; 
+      max-width: 450px; 
+      box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
+      border-top: 5px solid #3c8dbc;
+    }
+    .login-logo { max-width: 100px; margin-bottom: 15px; }
     
-    /* Main App Styles */
+    /* ================= MAIN APP LAYOUT ================= */
     #mainApp { display: none; }
-    .sidebar { min-height: 100vh; background-color: #212529; color: white; padding-top: 20px; }
-    .nav-link { color: #adb5bd; cursor: pointer; transition: all 0.3s; }
-    .nav-link:hover, .nav-link.active { background-color: #343a40; color: #0dcaf0; border-radius: 5px; }
-    .content-section { display: none; padding: 20px; }
-    .content-section.active { display: block; }
     
+    /* Top Navbar สไตล์ JVL */
+    .top-navbar { 
+      background-color: #3c8dbc; 
+      color: white; 
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      z-index: 1050;
+    }
+    .navbar-brand { font-weight: 600; font-size: 1.2rem; }
+    
+    /* Sidebar สไตล์ JVL */
+    .sidebar-wrapper {
+      width: 250px;
+      height: calc(100vh - 56px);
+      background-color: #f9fafc;
+      border-right: 1px solid #d2d6de;
+      position: fixed;
+      top: 56px;
+      left: 0;
+      transition: all 0.3s ease;
+      z-index: 1040;
+      overflow-y: auto;
+    }
+    .sidebar-menu { list-style: none; padding: 0; margin: 0; }
+    .sidebar-menu li.header {
+      padding: 10px 25px 10px 15px;
+      font-size: 12px;
+      color: #848484;
+      background: #f9fafc;
+      font-weight: bold;
+    }
+    .sidebar-menu li a {
+      display: block;
+      padding: 12px 15px;
+      color: #444;
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      border-bottom: 1px solid #f4f4f4;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .sidebar-menu li a:hover, .sidebar-menu li a.active {
+      background-color: #f4f4f5;
+      color: #3c8dbc;
+      border-left-color: #3c8dbc;
+      font-weight: 600;
+    }
+    .sidebar-menu li a i { width: 25px; text-align: center; color: #666; font-size: 1.1rem; }
+    .sidebar-menu li a:hover i, .sidebar-menu li a.active i { color: #3c8dbc; }
+    
+    /* Content Area */
+    .content-wrapper {
+      margin-left: 250px;
+      padding: 20px;
+      margin-top: 56px;
+      min-height: calc(100vh - 56px);
+      transition: all 0.3s ease;
+    }
+    .content-section { display: none; animation: fadeIn 0.4s; }
+    .content-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Mobile Responsive (Hamburger) */
+    @media (max-width: 768px) {
+      .sidebar-wrapper { left: -250px; box-shadow: 3px 0 10px rgba(0,0,0,0.1); }
+      .sidebar-wrapper.show { left: 0; }
+      .content-wrapper { margin-left: 0; }
+      /* Overlay สำหรับตอนเปิดเมนูมือถือ */
+      .sidebar-overlay {
+        display: none; position: fixed; top: 56px; left: 0; right: 0; bottom: 0; 
+        background: rgba(0,0,0,0.5); z-index: 1035;
+      }
+      .sidebar-overlay.show { display: block; }
+    }
+
     /* Role Base Hiding */
     .role-admin, .role-godadmin, .role-general { display: none; }
   </style>
@@ -28,121 +119,184 @@
 <body>
 
 <div id="loginScreen">
-  <div class="login-box">
-    <div class="text-center mb-4">
-      <i class="bi bi-shield-lock-fill text-primary" style="font-size: 3rem;"></i>
-      <h3 class="mt-2 fw-bold text-dark">Smart MIP</h3>
-      <p class="text-muted small">ระบบบริหารจัดการดูแลผู้ป่วย MIP</p>
-    </div>
+  <div class="login-box text-center">
+    <img src="https://www.rploei.go.th/ec2/wp-content/uploads/2017/08/cropped-cropped-cropped-3.png" alt="Logo" class="login-logo">
+    <h4 class="fw-bold text-dark mb-0">โรงพยาบาลจิตเวชเลยราชนครินทร์</h4>
+    <p class="text-primary fw-bold mb-4">Smart MIP Care System</p>
     
-    <div class="mb-3">
-      <label class="form-label text-secondary fw-bold">Username</label>
+    <div class="text-start mb-3">
+      <label class="form-label text-secondary fw-bold small">ชื่อผู้ใช้งาน (Username)</label>
       <div class="input-group">
-        <span class="input-group-text"><i class="bi bi-person"></i></span>
-        <input type="text" class="form-control" id="loginUser" placeholder="กรอกชื่อผู้ใช้" autofocus>
+        <span class="input-group-text bg-white"><i class="bi bi-person text-muted"></i></span>
+        <input type="text" class="form-control border-start-0 ps-0" id="loginUser" placeholder="กรอกชื่อผู้ใช้" autofocus>
       </div>
     </div>
-    <div class="mb-4">
-      <label class="form-label text-secondary fw-bold">Password</label>
+    <div class="text-start mb-4">
+      <label class="form-label text-secondary fw-bold small">รหัสผ่าน (Password)</label>
       <div class="input-group">
-        <span class="input-group-text"><i class="bi bi-key"></i></span>
-        <input type="password" class="form-control" id="loginPass" placeholder="กรอกรหัสผ่าน">
+        <span class="input-group-text bg-white"><i class="bi bi-key text-muted"></i></span>
+        <input type="password" class="form-control border-start-0 ps-0" id="loginPass" placeholder="กรอกรหัสผ่าน">
       </div>
     </div>
-    <button type="button" class="btn btn-primary w-100 py-2 fw-bold mb-3" onclick="doLogin()" id="btnLogin">เข้าสู่ระบบ</button>
+    <button type="button" class="btn btn-primary w-100 py-2 fw-bold mb-3 shadow-sm" style="background-color: #3c8dbc; border:none;" onclick="doLogin()" id="btnLogin">เข้าสู่ระบบ</button>
     
-    <div class="text-center">
-      <a href="#" class="text-decoration-none text-secondary small" onclick="doGuestLogin()">เข้าสู่ระบบในฐานะ Guest</a>
-    </div>
+    <a href="#" class="text-decoration-none text-muted small" onclick="doGuestLogin()"><i class="bi bi-eye"></i> เข้าสู่ระบบในฐานะ Guest View</a>
   </div>
 </div>
 
-<div id="mainApp" class="container-fluid">
-  <div class="row flex-nowrap">
+<div id="mainApp">
+  
+  <nav class="navbar top-navbar fixed-top">
+    <div class="container-fluid">
+      <div class="d-flex align-items-center">
+        <button class="btn btn-sm btn-outline-light me-2 d-md-none" onclick="toggleSidebar()"><i class="bi bi-list fs-5"></i></button>
+        <span class="navbar-brand mb-0 text-white"><i class="bi bi-shield-plus me-1"></i> Smart MIP</span>
+      </div>
+      <div class="d-flex align-items-center text-white">
+        <span id="userDisplay" class="me-3 small d-none d-sm-inline">User: -</span>
+        <button class="btn btn-sm btn-danger" onclick="logout()" title="ออกจากระบบ"><i class="bi bi-box-arrow-right"></i></button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <div class="sidebar-wrapper" id="sidebar">
+    <ul class="sidebar-menu">
+      <li class="header">เมนูหลัก (MAIN NAVIGATION)</li>
+      <li>
+        <a class="nav-link active" onclick="showPage('dashboard')">
+          <i class="bi bi-speedometer2"></i> <span>Dashboard (ภาพรวม)</span>
+        </a>
+      </li>
+      
+      <li class="header role-general role-admin role-godadmin mt-2">แบบประเมินทางคลินิก</li>
+      <li class="role-general role-admin role-godadmin">
+        <a class="nav-link" onclick="showPage('form-aws')">
+          <i class="bi bi-thermometer-half"></i> <span>1. ประเมิน AWS</span>
+        </a>
+      </li>
+      <li class="role-general role-admin role-godadmin">
+        <a class="nav-link" onclick="showPage('form-save')">
+          <i class="bi bi-exclamation-triangle"></i> <span>2. ประเมิน SAVE</span>
+        </a>
+      </li>
+      <li class="role-general role-admin role-godadmin">
+        <a class="nav-link" onclick="showPage('form-bprs')">
+          <i class="bi bi-clipboard2-pulse"></i> <span>3. ประเมิน BPRS</span>
+        </a>
+      </li>
+
+      <li class="header role-admin role-godadmin mt-2">สำหรับผู้ดูแลระบบ (ADMIN)</li>
+      <li class="role-admin role-godadmin">
+        <a class="nav-link" onclick="alert('กำลังพัฒนาระบบ')">
+          <i class="bi bi-gear"></i> <span>ตั้งค่าระบบ</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="content-wrapper" id="contentArea">
     
-    <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 sidebar">
-      <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100 w-100">
-        <div class="text-center w-100 pb-3 mb-3 border-bottom border-secondary">
-          <h5 class="text-info fw-bold d-none d-sm-block">Smart MIP</h5>
-          <small id="userDisplay" class="text-warning">User: -</small>
-        </div>
-        
-        <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start w-100" id="menu">
-          <li class="nav-item w-100">
-            <a class="nav-link align-middle px-0 active" onclick="showPage('dashboard')">
-              <i class="fs-4 bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Dashboard</span>
-            </a>
-          </li>
-          
-          <li class="nav-item w-100 role-general role-admin role-godadmin mt-3">
-            <span class="text-muted small fw-bold d-none d-sm-inline text-uppercase tracking-wider">แบบประเมินผู้ป่วย</span>
-            <a class="nav-link px-0 align-middle mt-2" onclick="showPage('form-aws')">
-              <i class="fs-4 bi-clipboard-data"></i> <span class="ms-1 d-none d-sm-inline">1. AWS</span>
-            </a>
-            <a class="nav-link px-0 align-middle" onclick="showPage('form-save')">
-              <i class="fs-4 bi-exclamation-triangle"></i> <span class="ms-1 d-none d-sm-inline">2. SAVE</span>
-            </a>
-          </li>
-        </ul>
-        
-        <div class="mt-auto w-100 pb-3">
-          <button class="btn btn-outline-danger w-100 d-none d-sm-block" onclick="logout()"><i class="bi bi-box-arrow-left"></i> ออกจากระบบ</button>
-          <button class="btn btn-outline-danger w-100 d-block d-sm-none" onclick="logout()"><i class="bi bi-box-arrow-left"></i></button>
-        </div>
+    <div id="dashboard" class="content-section active">
+      <h4 class="mb-3 text-secondary fw-bold">Dashboard <small class="text-muted fw-normal fs-6">ภาพรวมและสถิติ</small></h4>
+      <div class="alert alert-info border-0 shadow-sm border-start border-info border-4">
+        <i class="bi bi-info-circle-fill me-2"></i> ยินดีต้อนรับเข้าสู่ระบบจัดการและประเมินความเสี่ยงผู้ป่วย MIP กรุณาเลือกเมนูด้านซ้ายเพื่อเริ่มการทำงาน
       </div>
     </div>
 
-    <div class="col py-3 bg-light">
-      
-      <div id="dashboard" class="content-section active">
-        <h3 class="mb-4">Dashboard ภาพรวมระบบ</h3>
-        <div class="alert alert-primary shadow-sm"><i class="bi bi-info-circle"></i> ยินดีต้อนรับเข้าสู่ระบบจัดการและประเมินความเสี่ยง</div>
-      </div>
-
-      <div id="form-aws" class="content-section">
-        <h3 class="mb-4"><i class="bi bi-thermometer-half"></i> แบบประเมิน AWS</h3>
-        <div class="card shadow-sm border-0">
-          <div class="card-body">
-            <div class="row mb-3">
-              <div class="col-md-6 mb-2"><label class="fw-bold">HN</label><input type="text" id="aws_hn" class="form-control"></div>
-              <div class="col-md-6 mb-2"><label class="fw-bold">ผู้ประเมิน</label><input type="text" id="aws_staff" class="form-control"></div>
-            </div>
-            <div class="table-responsive">
-              <table class="table table-bordered">
-                <tbody>
-                  <tr>
-                    <td class="align-middle fw-bold">อุณหภูมิ</td>
-                    <td><select class="form-select aws-item" id="aws_temp" onchange="calculateAWS()">
-                      <option value="0">0: < 37.0 C</option><option value="1">1: 37.1-37.5</option><option value="2">2: 37.6-38.0</option><option value="3">3: 38.1-38.5</option><option value="4">4: > 38.5</option>
-                    </select></td>
-                  </tr>
-                  <tr>
-                    <td class="align-middle fw-bold">การรับรู้</td>
-                    <td><select class="form-select aws-item" id="aws_orientation" onchange="calculateAWS()">
-                      <option value="0">0: ปกติ</option><option value="1">1: รู้เวลาไม่แน่นอน</option><option value="2">2: ไม่รู้เวลา/สถานที่</option><option value="3">3: ไม่รู้เวลา/สถานที่/บุคคล</option><option value="4">4: ไม่รับรู้อะไรเลย</option>
-                    </select></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <h4 class="text-end mt-3">รวม: <span id="aws_total_display" class="text-primary fw-bold">0</span> <span id="aws_interpret_display" class="badge bg-success">Normal</span></h4>
-            <div class="text-end mt-3"><button class="btn btn-primary btn-lg px-4" onclick="submitAWS()" id="btnSubmitAWS">บันทึกข้อมูล</button></div>
+    <div id="form-aws" class="content-section">
+      <h4 class="mb-3 text-secondary fw-bold">แบบประเมินอาการถอนแอมเฟตามีน (AWS)</h4>
+      <div class="card shadow-sm border-0 border-top border-primary border-3 mb-4">
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-md-6 mb-2"><label class="fw-bold text-muted small">HN ผู้ป่วย</label><input type="text" id="aws_hn" class="form-control"></div>
+            <div class="col-md-6 mb-2"><label class="fw-bold text-muted small">ชื่อผู้ประเมิน</label><input type="text" id="aws_staff" class="form-control"></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle">
+              <thead class="table-light"><tr><th width="30%">รายการ</th><th>ระดับอาการ (คะแนน)</th></tr></thead>
+              <tbody>
+                <tr><td class="fw-bold">1. อุณหภูมิ</td><td><select class="form-select aws-item" id="aws_temp" onchange="calculateAWS()"><option value="0">0: < 37.0 C</option><option value="1">1: 37.1 - 37.5 C</option><option value="2">2: 37.6 - 38.0 C</option><option value="3">3: 38.1 - 38.5 C</option><option value="4">4: > 38.5 C</option></select></td></tr>
+                <tr><td class="fw-bold">2. การรับรู้</td><td><select class="form-select aws-item" id="aws_orientation" onchange="calculateAWS()"><option value="0">0: ปกติ</option><option value="1">1: รู้เวลาไม่แน่นอน</option><option value="2">2: ไม่รู้เวลา/สถานที่</option><option value="3">3: ไม่รู้เวลา/สถานที่/บุคคล</option><option value="4">4: ไม่รับรู้อะไรเลย</option></select></td></tr>
+                <tr><td class="fw-bold">3. วิตกกังวล</td><td><select class="form-select aws-item" id="aws_anxiety" onchange="calculateAWS()"><option value="0">0: อาการสงบ</option><option value="1">1: กังวลเล็กน้อย</option><option value="2">2: กังวลในอนาคต</option><option value="3">3: หวาดกลัว</option><option value="4">4: เคลื่อนไหวตลอดเวลา</option></select></td></tr>
+                <tr><td class="fw-bold">4. อาการวุ่นวาย</td><td><select class="form-select aws-item" id="aws_agitation" onchange="calculateAWS()"><option value="0">0: พักผ่อนได้</option><option value="1">1: ไม่อยู่นิ่ง</option><option value="2">2: กระสับกระส่าย</option><option value="3">3: ผุดลุกผุดนั่ง</option><option value="4">4: เคลื่อนไหวตลอดเวลา</option></select></td></tr>
+                <tr><td class="fw-bold">5. ประสาทหลอน</td><td><select class="form-select aws-item" id="aws_hallucination" onchange="calculateAWS()"><option value="0">0: ไม่มี</option><option value="1">1: หูแว่วเล็กน้อย</option><option value="2">2: หูแว่วเป็นบางเวลา</option><option value="3">3: หูแว่วตลอดเวลา</option><option value="4">4: ไม่อยู่ในโลกความจริง</option></select></td></tr>
+                <tr><td class="fw-bold">6. ซึมเศร้า</td><td><select class="form-select aws-item" id="aws_depression" onchange="calculateAWS()"><option value="0">0: ไม่พบ</option><option value="1">1: สีหน้าเรียบเฉย/แยกตัว</option><option value="2">2: ต้องกระตุ้นจึงตอบได้</option><option value="3">3: กระตุ้นไม่ตอบ</option><option value="4">4: ทำร้ายตนเอง/มีแนวโน้มฆ่าตัวตาย</option></select></td></tr>
+                <tr><td class="fw-bold">7. ก้าวร้าว</td><td><select class="form-select aws-item" id="aws_aggression" onchange="calculateAWS()"><option value="0">0: ไม่พบ</option><option value="1">1: สีหน้าไม่เป็นมิตร</option><option value="2">2: ต่อต้านบำบัด</option><option value="3">3: เอะอะโวยวาย</option><option value="4">4: ทำร้ายผู้อื่น/ข่มขู่</option></select></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mt-3 p-3 bg-light rounded">
+            <h5 class="mb-0">คะแนนรวม: <span id="aws_total_display" class="text-primary fw-bold fs-4 ms-2">0</span> <span id="aws_interpret_display" class="badge bg-success ms-2 fs-6">Normal</span></h5>
+            <button class="btn btn-primary px-4" onclick="submitAWS()" id="btnSubmitAWS"><i class="bi bi-save me-1"></i> บันทึกข้อมูล</button>
           </div>
         </div>
       </div>
-      
-      <div id="form-save" class="content-section">
-        <h3 class="mb-4"><i class="bi bi-exclamation-triangle-fill text-danger"></i> แบบประเมิน SAVE</h3>
-        <p class="text-muted">กำลังปรับโครงสร้างรองรับ API...</p>
-      </div>
-
     </div>
+    
+    <div id="form-save" class="content-section">
+      <h4 class="mb-3 text-secondary fw-bold">แบบประเมินความเสี่ยงทางคลินิก (SAVE)</h4>
+      <div class="card shadow-sm border-0 border-top border-danger border-3 mb-4">
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-md-6 mb-2"><label class="fw-bold text-muted small">HN ผู้ป่วย</label><input type="text" id="save_hn" class="form-control"></div>
+            <div class="col-md-6 mb-2"><label class="fw-bold text-muted small">ชื่อผู้ประเมิน</label><input type="text" id="save_staff" class="form-control"></div>
+          </div>
+
+          <div class="alert alert-light border shadow-sm sticky-top" style="top: 65px; z-index: 1000;">
+            <div class="d-flex flex-wrap justify-content-between text-center fw-bold fs-6">
+              <div class="p-2">Suicide: <span id="badge_s" class="badge bg-success">ต่ำ (0)</span></div>
+              <div class="p-2">Accident: <span id="badge_a" class="badge bg-success">ต่ำ (0)</span></div>
+              <div class="p-2">Violence: <span id="badge_v" class="badge bg-success">ต่ำ (0)</span></div>
+              <div class="p-2">Escape: <span id="badge_e" class="badge bg-success">ต่ำ (0)</span></div>
+            </div>
+          </div>
+
+          <div class="card mb-3 border-secondary"><div class="card-header bg-secondary text-white fw-bold">S : Suicide (แบบประเมินฆ่าตัวตาย)</div><div class="card-body">
+            <div class="form-check"><input class="form-check-input save-chk" type="checkbox" value="s_1" data-cat="S" data-star="true" onchange="calculateSAVE()"><label class="form-check-label">มีอาการหูแว่ว สั่งให้ทำร้ายตนเอง <span class="text-danger fw-bold">*</span></label></div>
+            <div class="form-check"><input class="form-check-input save-chk" type="checkbox" value="s_2" data-cat="S" onchange="calculateSAVE()"><label class="form-check-label">หวาดกลัว หวาดระแวง / หลงผิด หุนหันพลันแล่น / ซึมเศร้า ท้อแท้</label></div>
+            <div class="form-check"><input class="form-check-input save-chk" type="checkbox" value="s_9" data-cat="S" data-star="true" onchange="calculateSAVE()"><label class="form-check-label">ใน 1 เดือนที่ผ่านมา เคยพยายามฆ่าตัวตาย <span class="text-danger fw-bold">*</span></label></div>
+            <div class="form-check"><input class="form-check-input save-chk" type="checkbox" value="s_12" data-cat="S" data-star="true" onchange="calculateSAVE()"><label class="form-check-label">ใน 1 สัปดาห์ที่ผ่านมา พยายามฆ่าตัวตาย <span class="text-danger fw-bold">*</span></label></div>
+          </div></div>
+          
+          <div class="card mb-3 border-warning"><div class="card-header bg-warning text-dark fw-bold">A : Accident (แบบประเมินอุบัติเหตุ)</div><div class="card-body">
+            <div class="form-check"><input class="form-check-input save-chk" type="checkbox" value="a_1" data-cat="A" onchange="calculateSAVE()"><label class="form-check-label">อายุ 60 ปีขึ้นไป / รักษาด้วย ECT / ได้รับยา HAD</label></div>
+            <div class="form-check"><input class="form-check-input save-chk" type="checkbox" value="a_4" data-cat="A" data-star="true" onchange="calculateSAVE()"><label class="form-check-label">อ่อนเพลีย ง่วงซึม งุนงง สับสน อยู่นิ่งไม่ได้ <span class="text-danger fw-bold">*</span></label></div>
+            <div class="form-check"><input class="form-check-input save-chk" type="checkbox" value="a_5" data-cat="A" onchange="calculateSAVE()"><label class="form-check-label">มีโรคร่วม โรคลมชัก / ภาวะถอนพิษสุรา / เพ้อ / ความดันน้ำตาลผิดปกติ</label></div>
+          </div></div>
+
+          <div class="card mb-3 border-danger"><div class="card-header bg-danger text-white fw-bold">V : Violence (พฤติกรรมรุนแรง)</div><div class="card-body">
+            <div class="form-check"><input class="form-check-input save-chk" type="checkbox" value="v_5" data-cat="V" data-star="true" onchange="calculateSAVE()"><label class="form-check-label">ทำร้ายตนเองรุนแรง <span class="text-danger fw-bold">*</span></label></div>
+            <div class="form-check"><input class="form-check-input save-chk" type="checkbox" value="v_7" data-cat="V" data-star="true" onchange="calculateSAVE()"><label class="form-check-label">พูดข่มขู่จะทำร้ายผู้อื่นชัดเจน / ทำร้ายผู้อื่นจนได้รับบาดเจ็บ <span class="text-danger fw-bold">*</span></label></div>
+            <div class="form-check"><input class="form-check-input save-chk" type="checkbox" value="v_10" data-cat="V" data-star="true" onchange="calculateSAVE()"><label class="form-check-label">ทำสิ่งของแตกหัก กระจัดกระจาย <span class="text-danger fw-bold">*</span></label></div>
+            <div class="form-check"><input class="form-check-input save-chk" type="checkbox" value="v_2" data-cat="V" onchange="calculateSAVE()"><label class="form-check-label">มีอาการหูแว่ว เห็นภาพหลอน / หวาดกลัว หวาดระแวง / หงุดหงิดโวยวาย</label></div>
+          </div></div>
+
+          <div class="card mb-4 border-info"><div class="card-header bg-info text-dark fw-bold">E : Escape (แบบประเมินหลบหนี)</div><div class="card-body">
+            <div class="form-check"><input class="form-check-input save-chk" type="checkbox" value="e_1" data-cat="E" onchange="calculateSAVE()"><label class="form-check-label">มีประวัติพยายามหลบหนี / ประวัติติดสุรา ยา สารเสพติด</label></div>
+            <div class="form-check"><input class="form-check-input save-chk" type="checkbox" value="e_4" data-cat="E" data-star="true" onchange="calculateSAVE()"><label class="form-check-label">มีพฤติกรรมพยายามหลบหนี <span class="text-danger fw-bold">*</span></label></div>
+            <div class="form-check"><input class="form-check-input save-chk" type="checkbox" value="e_8" data-cat="E" data-star="true" onchange="calculateSAVE()"><label class="form-check-label">อยากเสพสุรา/ยา/สารเสพติด <span class="text-danger fw-bold">*</span></label></div>
+          </div></div>
+
+          <div class="text-end">
+            <button class="btn btn-danger px-4 btn-lg" onclick="submitSAVE()" id="btnSubmitSAVE"><i class="bi bi-save me-1"></i> บันทึกข้อมูล SAVE</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="form-bprs" class="content-section">
+      <h4 class="mb-3 text-secondary fw-bold">แบบประเมิน BPRS</h4>
+      <div class="alert alert-warning shadow-sm"><i class="bi bi-tools me-2"></i> โครงสร้าง BPRS กำลังอยู่ในระหว่างการพัฒนาเข้าสู่ระบบ API</div>
+    </div>
+
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // 🔗 ตัวแปรสำหรับเชื่อม API ของ Google Apps Script
+  // 🔗 URL ของ API ฝั่ง Google Apps Script
   const API_URL = 'https://script.google.com/macros/s/AKfycbyuYuC3kFwHOhfKaiiYtnSg2u2SfWwSJvT-utrnfMtTB9Gc8tbVIAvNKiIm9d6xAjg/exec';
   let currentUserRole = '';
 
@@ -151,40 +305,47 @@
     try {
       const response = await fetch(API_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // ป้องกันปัญหา CORS
+        redirect: 'follow', // ⭐️ สำคัญ: วิ่งตาม Redirect ของ Google
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // ⭐️ เลี่ยงปัญหา CORS
         body: JSON.stringify({ action: action, data: dataObj })
       });
       return await response.json();
     } catch (error) {
-      alert("เกิดปัญหาการเชื่อมต่อเครือข่าย: " + error);
+      alert("ปัญหาเครือข่าย: ไม่สามารถเชื่อมต่อฐานข้อมูลได้");
+      console.error(error);
       return { success: false };
     }
   }
 
-  // =============== ระบบ Login & UI ===============
-  // ตรวจจับการกดปุ่ม Enter ในช่อง Password เพื่อ Login
+  // =============== System & UI Logic ===============
   document.getElementById("loginPass").addEventListener("keyup", function(event) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      doLogin();
-    }
+    if (event.key === "Enter") { event.preventDefault(); doLogin(); }
   });
 
   function showPage(pageId) {
     document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
-    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+    document.querySelectorAll('.sidebar-menu .nav-link').forEach(link => link.classList.remove('active'));
     document.getElementById(pageId).classList.add('active');
     event.currentTarget.classList.add('active');
+    
+    // ปิดเมนูมือถืออัตโนมัติเมื่อเลือกเสร็จ
+    if(window.innerWidth <= 768) { toggleSidebar(); }
+  }
+
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('show');
+    document.getElementById('sidebarOverlay').classList.toggle('show');
   }
 
   function logout() { location.reload(); }
 
+  // =============== Login Logic ===============
   async function doLogin() {
     const btn = document.getElementById('btnLogin');
     const user = document.getElementById('loginUser').value;
     const pass = document.getElementById('loginPass').value;
     
-    btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> กำลังตรวจสอบ...';
+    btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> กำลังเข้าสู่ระบบ...';
     
     const res = await callAPI('login', { username: user, password: pass });
     handleLoginResult(res, btn);
@@ -197,39 +358,31 @@
 
   function handleLoginResult(response, btn) {
     btn.disabled = false; btn.innerText = "เข้าสู่ระบบ";
-    
     if(response && response.success) {
       currentUserRole = response.role;
-      document.getElementById('userDisplay').innerText = `User: ${response.name} (${response.role})`;
+      document.getElementById('userDisplay').innerText = `${response.name} (${response.role})`;
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('mainApp').style.display = 'block';
 
-      // เปิดสิทธิ์การเข้าถึงเมนู
-      if (['General', 'Admin', 'GodAdmin'].includes(currentUserRole)) {
-        document.querySelectorAll('.role-general').forEach(el => el.style.display = 'block');
-      }
-      if (['Admin', 'GodAdmin'].includes(currentUserRole)) {
-        document.querySelectorAll('.role-admin').forEach(el => el.style.display = 'block');
-      }
-      if (currentUserRole === 'GodAdmin') {
-        document.querySelectorAll('.role-godadmin').forEach(el => el.style.display = 'block');
-      }
+      if (['General', 'Admin', 'GodAdmin'].includes(currentUserRole)) { document.querySelectorAll('.role-general').forEach(el => el.style.display = 'block'); }
+      if (['Admin', 'GodAdmin'].includes(currentUserRole)) { document.querySelectorAll('.role-admin').forEach(el => el.style.display = 'block'); }
+      if (currentUserRole === 'GodAdmin') { document.querySelectorAll('.role-godadmin').forEach(el => el.style.display = 'block'); }
     } else {
-      alert(response.message || 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
+      alert(response.message || 'รหัสผ่านไม่ถูกต้อง');
     }
   }
 
-  // =============== ระบบบันทึก AWS ===============
+  // =============== AWS Logic ===============
   function calculateAWS() {
     let total = 0;
     document.querySelectorAll('.aws-item').forEach(sel => total += parseInt(sel.value));
     document.getElementById('aws_total_display').innerText = total;
     
     let badge = document.getElementById('aws_interpret_display');
-    if(total==0){ badge.className='badge bg-success'; badge.innerText='Normal'; }
-    else if(total<=13){ badge.className='badge bg-warning text-dark'; badge.innerText='Mild (1-13)'; }
-    else if(total<=20){ badge.className='badge bg-orange'; badge.style.backgroundColor='#fd7e14'; badge.innerText='Moderate (14-20)'; }
-    else { badge.className='badge bg-danger'; badge.style.backgroundColor=''; badge.innerText='Severe (>20)'; }
+    if(total==0){ badge.className='badge bg-success ms-2 fs-6'; badge.innerText='Normal'; }
+    else if(total<=13){ badge.className='badge bg-warning text-dark ms-2 fs-6'; badge.innerText='Mild (1-13)'; }
+    else if(total<=20){ badge.className='badge text-white ms-2 fs-6'; badge.style.backgroundColor='#fd7e14'; badge.innerText='Moderate (14-20)'; }
+    else { badge.className='badge bg-danger ms-2 fs-6'; badge.style.backgroundColor=''; badge.innerText='Severe (>20)'; }
   }
 
   async function submitAWS() {
@@ -245,20 +398,73 @@
       items: {
         temp: document.getElementById('aws_temp').value,
         orientation: document.getElementById('aws_orientation').value,
-        anxiety: 0, agitation: 0, hallucination: 0, depression: 0, aggression: 0 // ลดรูปตัวอย่าง
+        anxiety: document.getElementById('aws_anxiety').value,
+        agitation: document.getElementById('aws_agitation').value,
+        hallucination: document.getElementById('aws_hallucination').value,
+        depression: document.getElementById('aws_depression').value,
+        aggression: document.getElementById('aws_aggression').value
       },
       totalScore: parseInt(document.getElementById('aws_total_display').innerText)
     };
 
     const res = await callAPI('saveAWS', payload);
     alert(res.message || "เกิดข้อผิดพลาด");
-    
     if(res.success){ 
       document.querySelectorAll('.aws-item').forEach(s => s.value="0"); 
-      document.getElementById('aws_hn').value=''; 
-      calculateAWS(); 
+      document.getElementById('aws_hn').value=''; calculateAWS(); 
     }
-    btn.disabled = false; btn.innerText="บันทึกข้อมูล";
+    btn.disabled = false; btn.innerHTML = '<i class="bi bi-save me-1"></i> บันทึกข้อมูล';
+  }
+
+  // =============== SAVE Logic ===============
+  let saveResult = { S:{score:0,level:'ต่ำ'}, A:{score:0,level:'ต่ำ'}, V:{score:0,level:'ต่ำ'}, E:{score:0,level:'ต่ำ'}, checkedItems:[], totalScore:0 };
+
+  function calculateSAVE() {
+    let scores = { S:0, A:0, V:0, E:0 }, stars = { S:false, A:false, V:false, E:false };
+    saveResult.checkedItems = [];
+
+    document.querySelectorAll('.save-chk').forEach(chk => {
+      if (chk.checked) {
+        let cat = chk.getAttribute('data-cat');
+        scores[cat] += 1;
+        if (chk.getAttribute('data-star') === 'true') stars[cat] = true;
+        saveResult.checkedItems.push(chk.value);
+      }
+    });
+
+    saveResult.totalScore = scores.S + scores.A + scores.V + scores.E;
+
+    saveResult.S.score = scores.S; saveResult.S.level = stars.S ? 'สูง (Star)' : (scores.S >= 7 ? 'สูง' : (scores.S >= 4 ? 'ปานกลาง' : 'ต่ำ'));
+    saveResult.A.score = scores.A; saveResult.A.level = stars.A ? 'สูง (Star)' : (scores.A >= 7 ? 'สูง' : (scores.A >= 4 ? 'ปานกลาง' : 'ต่ำ'));
+    saveResult.V.score = scores.V; saveResult.V.level = stars.V ? 'สูง (Star)' : (scores.V >= 9 ? 'สูง' : (scores.V >= 5 ? 'ปานกลาง' : 'ต่ำ'));
+    saveResult.E.score = scores.E; saveResult.E.level = stars.E ? 'สูง (Star)' : (scores.E >= 6 ? 'สูง' : (scores.E >= 3 ? 'ปานกลาง' : 'ต่ำ'));
+
+    updateBadge('badge_s', saveResult.S); updateBadge('badge_a', saveResult.A); updateBadge('badge_v', saveResult.V); updateBadge('badge_e', saveResult.E);
+  }
+
+  function updateBadge(id, obj) {
+    let el = document.getElementById(id);
+    el.innerText = `${obj.level} (${obj.score})`;
+    el.className = obj.level.includes('สูง') ? 'badge bg-danger' : (obj.level === 'ปานกลาง' ? 'badge bg-warning text-dark' : 'badge bg-success');
+  }
+
+  async function submitSAVE() {
+    const hn = document.getElementById('save_hn').value;
+    const staff = document.getElementById('save_staff').value;
+    if(!hn || !staff) { alert("กรุณาระบุ HN และผู้ประเมิน"); return; }
+    
+    const btn = document.getElementById('btnSubmitSAVE');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> กำลังบันทึก...';
+
+    const payload = { hn: hn, staffName: staff, S: saveResult.S, A: saveResult.A, V: saveResult.V, E: saveResult.E, checkedItems: saveResult.checkedItems, totalScore: saveResult.totalScore };
+
+    const res = await callAPI('saveSAVE', payload);
+    alert(res.message || "เกิดข้อผิดพลาด");
+    if(res.success){ 
+      document.querySelectorAll('.save-chk').forEach(c => c.checked=false); 
+      document.getElementById('save_hn').value=''; calculateSAVE(); 
+    }
+    btn.disabled = false; btn.innerHTML = '<i class="bi bi-save me-1"></i> บันทึกข้อมูล SAVE';
   }
 </script>
 </body>
