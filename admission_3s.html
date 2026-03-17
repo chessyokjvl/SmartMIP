@@ -3,9 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ลงทะเบียน & คัดกรอง Pathway - JVL</title>
+  <title>ลงทะเบียน & คัดกรอง 3S - Smart Ward</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <style>
+    .cm-alert { background-color: #212529; color: #fff; border: 2px solid #ffc107; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+    .fade-in { animation: fadeIn 0.4s; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
 </head>
 <body>
 
@@ -13,14 +18,14 @@
 <div id="app-sidebar" class="sidebar-wrapper"></div>
 
 <div class="content-wrapper">
-  <h4 class="mb-3 text-secondary fw-bold"><i class="bi bi-person-bounding-box text-primary me-2"></i> ลงทะเบียนและคัดกรองแรกรับ (Admit & Pathway Tagging)</h4>
+  <h4 class="mb-3 text-secondary fw-bold"><i class="bi bi-person-bounding-box text-primary me-2"></i> ลงทะเบียนและคัดกรองความซับซ้อน (Stratification & Triage)</h4>
   
   <div class="card shadow-sm border-0 border-top border-primary border-4 mb-4">
     <div class="card-body p-4">
       
-      <h5 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="bi bi-1-circle-fill text-primary me-2"></i> ส่วนที่ 1: ข้อมูลผู้ป่วยแรกรับ (Admission)</h5>
+      <h5 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="bi bi-1-circle-fill text-primary me-2"></i> ส่วนที่ 1: ข้อมูลรับใหม่ (Admission & Diagnosis)</h5>
       <div class="row mb-4">
-        <div class="col-md-3 mb-3"><label class="fw-bold text-muted small">HN ผู้ป่วย</label><input type="text" id="admit_hn" class="form-control" placeholder="ระบุ HN"></div>
+        <div class="col-md-3 mb-3"><label class="fw-bold text-muted small">HN ผู้ป่วย</label><input type="text" id="admit_hn" class="form-control fw-bold" placeholder="ระบุ HN"></div>
         <div class="col-md-3 mb-3"><label class="fw-bold text-muted small">วันที่ Admit</label><input type="date" id="admit_date" class="form-control"></div>
         <div class="col-md-3 mb-3"><label class="fw-bold text-muted small">หอผู้ป่วยที่รับไว้</label>
           <select class="form-select" id="admit_ward">
@@ -32,33 +37,94 @@
             <option value="ฉัตรชบา (พิเศษ)">ฉัตรชบา (พิเศษ)</option>
           </select>
         </div>
-        <div class="col-md-3 mb-3"><label class="fw-bold text-muted small">ผู้ลงทะเบียน</label><input type="text" id="admit_staff" class="form-control" readonly></div>
-      </div>
-
-      <h5 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="bi bi-2-circle-fill text-primary me-2"></i> ส่วนที่ 2: แบบประเมินคัดกรองแยกกลุ่ม (Pathway Routing)</h5>
-      <div class="p-3 bg-light rounded mb-4">
-        <div class="form-check mb-3 p-3 bg-white border rounded shadow-sm">
-          <input class="form-check-input ms-1 me-2 pathway-radio" type="radio" name="pathway_criteria" value="MIP" id="c1" onchange="evaluatePathway()">
-          <label class="form-check-label text-primary fw-bold" for="c1">กลุ่มที่ 1: MIP (F15.5) - โรคจิตจากเมทแอมเฟตามีน</label>
-        </div>
-        <div class="form-check mb-3 p-3 bg-white border rounded shadow-sm">
-          <input class="form-check-input ms-1 me-2 pathway-radio" type="radio" name="pathway_criteria" value="SCHIZO" id="c2" onchange="evaluatePathway()">
-          <label class="form-check-label text-success fw-bold" for="c2">กลุ่มที่ 2: Schizophrenia (F20) - โรคจิตเภท</label>
-        </div>
-        <div class="form-check mb-2 p-3 bg-white border rounded shadow-sm">
-          <input class="form-check-input ms-1 me-2 pathway-radio" type="radio" name="pathway_criteria" value="GENERAL" id="c3" onchange="evaluatePathway()">
-          <label class="form-check-label text-secondary fw-bold" for="c3">กลุ่มที่ 3: ผู้ป่วยจิตเวชทั่วไป (Others)</label>
+        
+        <div class="col-md-3 mb-3">
+          <label class="fw-bold text-primary small"><i class="bi bi-search"></i> รหัสวินิจฉัยโรค (ICD-10)</label>
+          <select class="form-select fw-bold border-primary" id="admit_icd10_select" onchange="checkDiagnosis()">
+            <option value="">-- เลือกการวินิจฉัย --</option>
+            <option value="F15.5">F15.5 (MIP - จิตจากสารเสพติด)</option>
+            <option value="F20">F20 (Schizophrenia - โรคจิตเภท)</option>
+            <option value="OTHER">อื่นๆ (โปรดระบุ)</option>
+          </select>
+          <input type="text" id="admit_icd10_other" class="form-control mt-2 fade-in" placeholder="ระบุรหัส ICD-10..." style="display: none;">
+          <div class="small text-muted mt-1" id="dx_helper">จิ้มเลือกเพื่อโหลดแบบประเมิน</div>
         </div>
       </div>
 
-      <h5 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="bi bi-3-circle-fill text-primary me-2"></i> ส่วนที่ 3: สรุปการติด Tag และดำเนินการ</h5>
-      <div class="card border-0 shadow-sm" style="background-color: #f8f9fa;" id="pathway_result_box">
+      <h5 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="bi bi-2-circle-fill text-primary me-2"></i> ส่วนที่ 2: ประเมินความยุ่งยากซับซ้อน (Complexity Stratification)</h5>
+      
+      <div id="form_mip" class="p-4 bg-light rounded border mb-4 fade-in" style="display: none; border-left: 5px solid #0d6efd !important;">
+        <h6 class="fw-bold text-primary mb-3"><i class="bi bi-clipboard-pulse"></i> เกณฑ์คัดกรอง MIP Stratification (F15.5)</h6>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="fw-bold small text-muted">1. การใช้สารเสพติด</label>
+            <select class="form-select mip-select" onchange="calculateStratification()">
+              <option value="1">เมทแอมเฟตามีน อย่างเดียว (ทั่วไป)</option>
+              <option value="2">เมทฯ + สารอื่น 1 ชนิด (3S)</option>
+              <option value="3">เมทฯ + สารอื่น 2 ชนิดขึ้นไป (3S+)</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="fw-bold small text-muted">2. โรคทางกาย / ภาวะแทรกซ้อน</label>
+            <select class="form-select mip-select" onchange="calculateStratification()">
+              <option value="1">ปกติ / ไม่มี (ทั่วไป)</option>
+              <option value="2">มีโรคร่วมที่ควบคุมได้ (3S)</option>
+              <option value="3">วิกฤตทางกาย / BP สูง / ไข้สูง (3S+)</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="fw-bold small text-muted">3. ความรุนแรงทางคลินิก (SAVE / BPRS)</label>
+            <select class="form-select mip-select" onchange="calculateStratification()">
+              <option value="1">อาการไม่รุนแรง (SAVE 0-1) (ทั่วไป)</option>
+              <option value="2">ดื้อยา/ต้องทำ ECT (3S)</option>
+              <option value="3">SAVE สีแดง / BPRS สูงทะลุเกณฑ์ (3S+)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div id="form_schizo" class="p-4 bg-light rounded border mb-4 fade-in" style="display: none; border-left: 5px solid #198754 !important;">
+        <h6 class="fw-bold text-success mb-3"><i class="bi bi-diagram-3"></i> เกณฑ์ความซับซ้อน Schizophrenia (F20)</h6>
+        <div class="form-check mb-2">
+          <input class="form-check-input schiz-chk fs-5" type="checkbox" id="s_smiv" onchange="calculateStratification()">
+          <label class="form-check-label text-danger fw-bold mt-1" for="s_smiv">มีภาวะ SMI-V Active (รุนแรง / ก้าวร้าว / ฆ่าตัวตาย)</label>
+        </div>
+        <hr class="text-muted">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-check mb-2"><input class="form-check-input schiz-chk" type="checkbox" id="s_duration" onchange="calculateStratification()"><label class="form-check-label fw-bold">ระยะเวลาการเจ็บป่วยนานเกิน 5 ปี</label></div>
+            <div class="form-check mb-2"><input class="form-check-input schiz-chk" type="checkbox" id="s_med" onchange="calculateStratification()"><label class="form-check-label fw-bold">ได้รับยาต้านโรคจิต $\ge$ 3 ชนิด หรือได้ Clozapine</label></div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-check mb-2"><input class="form-check-input schiz-chk" type="checkbox" id="s_relapse" onchange="calculateStratification()"><label class="form-check-label fw-bold">High Relapse (Admit > 3 ครั้ง/ปี หรือ Re-admit < 28 วัน)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input schiz-chk" type="checkbox" id="s_social" onchange="calculateStratification()"><label class="form-check-label fw-bold">Social Risk (ขาดผู้ดูแล/ชุมชนปฏิเสธ)</label></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="form_general" class="p-4 bg-light rounded border mb-4 fade-in text-center" style="display: none; border-left: 5px solid #6c757d !important;">
+        <h6 class="fw-bold text-secondary mb-0"><i class="bi bi-info-circle"></i> ผู้ป่วยจิตเวชทั่วไป (General Care) - ดำเนินการตามมาตรฐานการพยาบาลหอผู้ป่วย</h6>
+      </div>
+
+      <div class="card border-0 shadow-sm" style="background-color: #f8f9fa;" id="result_box">
         <div class="card-body text-center py-4">
-          <h5 class="text-muted mb-0" id="pathway_placeholder">กรุณาเลือกกลุ่มผู้ป่วยเพื่อประมวลผล Tag</h5>
-          <div id="pathway_display" style="display: none;">
-            <h6 class="fw-bold mb-2">ผู้ป่วยรายนี้ถูกติด Tag ในกลุ่ม:</h6>
-            <h2 class="fw-bold mb-2" id="pathway_name">-</h2>
-            <button class="btn btn-lg fw-bold px-5" id="btnRegister" onclick="registerPatient()"><i class="bi bi-person-add me-2"></i> บันทึก Admit และติด Tag</button>
+          <h5 class="text-muted mb-0" id="placeholder_text">กรุณาเลือกการวินิจฉัยเพื่อประมวลผล</h5>
+          
+          <div id="result_display" style="display: none;">
+            <h6 class="fw-bold mb-2">กลุ่มโรคหลัก (Primary Pathway): <span id="res_dx" class="fs-5">-</span></h6>
+            <h5 class="fw-bold mb-2 mt-3 text-dark">ระดับความยุ่งยากซับซ้อน (Complexity Level):</h5>
+            
+            <div id="res_badge" class="mb-3"></div>
+            
+            <div id="res_cm_alert" class="alert cm-alert py-2 w-75 mx-auto mb-4" style="display:none;">
+              <i class="bi bi-star-fill text-warning"></i> <strong>เคสยุ่งยากซับซ้อนสูงสุด:</strong> ต้องเข้าสู่กระบวนการ <u>Case Management (CM)</u>
+            </div>
+            
+            <div id="res_map_alert" class="alert py-2 w-75 mx-auto mb-4" style="background-color:#fff3cd; color:#856404; border:1px solid #ffeeba; display:none;">
+              <i class="bi bi-map-fill"></i> <strong>เคสยุ่งยากซับซ้อน:</strong> ดูแลตามแผนการพยาบาลรายกลุ่ม <u>(Care Map)</u>
+            </div>
+
+            <button class="btn btn-lg fw-bold px-5 btn-primary shadow" id="btnRegister" onclick="registerPatient()"><i class="bi bi-person-check-fill me-2"></i> บันทึก Admit และจัดกลุ่มผู้ป่วย</button>
           </div>
         </div>
       </div>
@@ -69,59 +135,155 @@
 
 <script src="app.js"></script>
 <script>
+  let currentGroup = "";
+  let finalPathway = "";
+  let finalS3Result = "";
+
   document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('admit_date').valueAsDate = new Date();
-    setTimeout(() => { const staffName = sessionStorage.getItem('userName'); if(staffName) document.getElementById('admit_staff').value = staffName; }, 500);
+    setTimeout(() => { const staff = sessionStorage.getItem('userName'); if(staff) document.getElementById('admit_staff').value = staff; }, 500);
   });
 
-  function evaluatePathway() {
-    const selected = document.querySelector('input[name="pathway_criteria"]:checked').value;
-    const placeholder = document.getElementById('pathway_placeholder');
-    const displayBox = document.getElementById('pathway_display');
-    const nameEl = document.getElementById('pathway_name');
-    const btnReg = document.getElementById('btnRegister');
-    const resultBox = document.getElementById('pathway_result_box');
+  // 1. ฟังก์ชันสลับแบบประเมินเมื่อจิ้มเลือก Dropdown
+  function checkDiagnosis() {
+    const selectVal = document.getElementById('admit_icd10_select').value;
+    const otherInput = document.getElementById('admit_icd10_other');
+    const helper = document.getElementById('dx_helper');
+    
+    document.getElementById('form_mip').style.display = 'none';
+    document.getElementById('form_schizo').style.display = 'none';
+    document.getElementById('form_general').style.display = 'none';
+    
+    if (selectVal === "") {
+      otherInput.style.display = 'none';
+      helper.innerHTML = "จิ้มเลือกเพื่อโหลดแบบประเมิน";
+      helper.className = "small text-muted mt-1";
+      document.getElementById('result_display').style.display = 'none';
+      document.getElementById('placeholder_text').style.display = 'block';
+      return;
+    }
 
-    placeholder.style.display = 'none'; displayBox.style.display = 'block';
+    if (selectVal === 'F15.5') {
+      otherInput.style.display = 'none';
+      currentGroup = "MIP";
+      helper.innerHTML = "<i class='bi bi-check-circle-fill text-primary'></i> เข้าเกณฑ์ MIP (F15.5)";
+      helper.className = "small text-primary fw-bold mt-1";
+      document.getElementById('form_mip').style.display = 'block';
+    } 
+    else if (selectVal === 'F20') {
+      otherInput.style.display = 'none';
+      currentGroup = "SCHIZO";
+      helper.innerHTML = "<i class='bi bi-check-circle-fill text-success'></i> เข้าเกณฑ์ Schizophrenia (F20)";
+      helper.className = "small text-success fw-bold mt-1";
+      document.getElementById('form_schizo').style.display = 'block';
+    } 
+    else if (selectVal === 'OTHER') {
+      otherInput.style.display = 'block'; // โชว์กล่องให้พิมพ์เมื่อเลือกอื่นๆ
+      currentGroup = "GENERAL";
+      helper.innerHTML = "<i class='bi bi-info-circle-fill text-secondary'></i> กลุ่มจิตเวชทั่วไป (โปรดระบุรหัส)";
+      helper.className = "small text-secondary fw-bold mt-1";
+      document.getElementById('form_general').style.display = 'block';
+    }
 
-    if (selected === 'MIP') {
-      nameEl.innerHTML = '<span class="badge bg-primary fs-3">Tag: MIP (F15.5)</span>';
-      btnReg.className = 'btn btn-primary btn-lg fw-bold px-5 text-white'; resultBox.style.backgroundColor = '#e7f1ff'; resultBox.style.border = '2px solid #0d6efd';
-    } else if (selected === 'SCHIZO') {
-      nameEl.innerHTML = '<span class="badge bg-success fs-3">Tag: Schizophrenia (F20)</span>';
-      btnReg.className = 'btn btn-success btn-lg fw-bold px-5 text-white'; resultBox.style.backgroundColor = '#e8f5e9'; resultBox.style.border = '2px solid #198754';
-    } else {
-      nameEl.innerHTML = '<span class="badge bg-secondary fs-3">Tag: อื่นๆ (Others)</span>';
-      btnReg.className = 'btn btn-secondary btn-lg fw-bold px-5 text-white'; resultBox.style.backgroundColor = '#f8f9fa'; resultBox.style.border = '2px solid #6c757d';
+    calculateStratification();
+  }
+
+  // 2. คำนวณความซับซ้อนตามเงื่อนไข (คงเดิมตามโมเดลของคุณ)
+  function calculateStratification() {
+    const placeholder = document.getElementById('placeholder_text');
+    const displayBox = document.getElementById('result_display');
+    const resDx = document.getElementById('res_dx');
+    const badge = document.getElementById('res_badge');
+    const cmAlert = document.getElementById('res_cm_alert');
+    const mapAlert = document.getElementById('res_map_alert');
+    const resultBox = document.getElementById('result_box');
+
+    placeholder.style.display = 'none';
+    displayBox.style.display = 'block';
+    cmAlert.style.display = 'none';
+    mapAlert.style.display = 'none';
+
+    if (currentGroup === "MIP") {
+      resDx.innerHTML = '<span class="text-primary fw-bold">MIP (F15.5)</span>';
+      finalPathway = 'Smart MIP Care';
+      
+      let highestLevel = 1;
+      document.querySelectorAll('.mip-select').forEach(sel => {
+        if(parseInt(sel.value) > highestLevel) highestLevel = parseInt(sel.value);
+      });
+
+      if (highestLevel === 3) {
+        badge.innerHTML = '<span class="badge bg-danger fs-3 shadow px-4 py-2" style="border-radius:30px;">ยุ่งยากซับซ้อนมาก (3S+)</span>';
+        resultBox.style.border = '3px solid #dc3545'; cmAlert.style.display = 'block'; finalS3Result = "MIP [3S+ CM]";
+      } else if (highestLevel === 2) {
+        badge.innerHTML = '<span class="badge bg-warning text-dark fs-4 shadow px-4 py-2" style="border-radius:30px;">ยุ่งยากซับซ้อน (3S)</span>';
+        resultBox.style.border = '2px solid #ffc107'; mapAlert.style.display = 'block'; finalS3Result = "MIP [3S]";
+      } else {
+        badge.innerHTML = '<span class="badge bg-info text-dark fs-5 shadow px-4 py-2" style="border-radius:30px;">กลุ่มทั่วไป (Routine Care)</span>';
+        resultBox.style.border = '1px solid #0dcaf0'; finalS3Result = "MIP [General]";
+      }
+    } 
+    else if (currentGroup === "SCHIZO") {
+      resDx.innerHTML = '<span class="text-success fw-bold">Schizophrenia (F20)</span>';
+      finalPathway = 'Schizo Care Map';
+      
+      const hasSMIV = document.getElementById('s_smiv').checked;
+      let complexCount = 0;
+      document.querySelectorAll('.schiz-chk:not(#s_smiv)').forEach(chk => { if(chk.checked) complexCount++; });
+
+      if (hasSMIV && complexCount >= 2) {
+        badge.innerHTML = '<span class="badge bg-dark fs-3 shadow px-4 py-2" style="border-radius:30px;">ยุ่งยากซับซ้อนสูงสุด (3S+ CM)</span>';
+        resultBox.style.border = '3px solid #212529'; cmAlert.style.display = 'block'; finalS3Result = "Schiz [3S+ CM]";
+      } else if (hasSMIV || complexCount >= 1) {
+        badge.innerHTML = '<span class="badge bg-secondary fs-4 shadow px-4 py-2" style="border-radius:30px;">ระดับซับซ้อน (3S Care Map)</span>';
+        resultBox.style.border = '2px solid #6c757d'; mapAlert.style.display = 'block'; finalS3Result = "Schiz [3S]";
+      } else {
+        badge.innerHTML = '<span class="badge bg-light text-dark border fs-5 px-4 py-2" style="border-radius:30px;">ระดับทั่วไป (Routine Care)</span>';
+        resultBox.style.border = '1px solid #dee2e6'; finalS3Result = "Schiz [General]";
+      }
+    } 
+    else {
+      resDx.innerHTML = '<span class="text-secondary fw-bold">กลุ่มโรคจิตเวชทั่วไป</span>';
+      finalPathway = 'General Care';
+      badge.innerHTML = '<span class="badge bg-light text-dark border fs-5 px-4 py-2" style="border-radius:30px;">ดำเนินการตามมาตรฐานหอผู้ป่วย</span>';
+      resultBox.style.border = '1px solid #dee2e6'; finalS3Result = "General Care";
     }
   }
 
+  // 3. ฟังก์ชันบันทึก
   async function registerPatient() {
     const hn = document.getElementById('admit_hn').value;
-    const pathway = document.querySelector('input[name="pathway_criteria"]:checked').value;
-    const staffName = sessionStorage.getItem('userName') || 'ไม่ระบุชื่อ';
+    const ward = document.getElementById('admit_ward').value;
+    const selectIcd10 = document.getElementById('admit_icd10_select').value;
+    const otherIcd10 = document.getElementById('admit_icd10_other').value;
+    const staffName = document.getElementById('admit_staff').value || sessionStorage.getItem('userName');
     
+    // ดึงค่า ICD10 จริงๆ มาเช็ค
+    const finalIcd10 = (selectIcd10 === 'OTHER') ? otherIcd10 : selectIcd10;
+
     if(!hn) { alert('กรุณาระบุ HN ผู้ป่วย'); return; }
-    if(!document.getElementById('admit_ward').value) { alert('กรุณาเลือกหอผู้ป่วย'); return; }
+    if(!ward) { alert('กรุณาเลือกหอผู้ป่วย'); return; }
+    if(!finalIcd10) { alert('กรุณาระบุรหัสวินิจฉัยโรค (ICD-10)'); return; }
 
     const btnReg = document.getElementById('btnRegister');
     btnReg.disabled = true; btnReg.innerHTML = '<span class="spinner-border spinner-border-sm"></span> กำลังบันทึก...';
 
     const payload = {
-      hn: hn, admitDate: document.getElementById('admit_date').value, ward: document.getElementById('admit_ward').value,
-      s3Result: pathway, pathway: pathway === 'MIP' ? 'Smart MIP Care' : (pathway === 'SCHIZO' ? 'Schizo Care Map' : 'General Care'), staffName: staffName
+      hn: hn,
+      admitDate: document.getElementById('admit_date').value,
+      ward: ward,
+      s3Result: finalS3Result, 
+      pathway: finalPathway,
+      staffName: staffName
     };
 
     const res = await callAPI('registerAdmission', payload);
-    alert(res.message || "บันทึกสำเร็จ");
+    alert(res.message || "บันทึกและจัดกลุ่มผู้ป่วยสำเร็จ!");
     
     if(res.success){
-      document.getElementById('admit_hn').value = ''; document.getElementById('admit_ward').value = '';
-      document.querySelectorAll('.pathway-radio').forEach(r => r.checked = false);
-      document.getElementById('pathway_display').style.display = 'none'; document.getElementById('pathway_placeholder').style.display = 'block';
-      document.getElementById('pathway_result_box').style.backgroundColor = '#f8f9fa'; document.getElementById('pathway_result_box').style.border = 'none';
+      window.location.href = 'patients.html'; 
     }
-    btnReg.disabled = false; btnReg.innerHTML = '<i class="bi bi-person-add me-2"></i> บันทึก Admit และติด Tag';
+    btnReg.disabled = false; btnReg.innerHTML = '<i class="bi bi-person-check-fill me-2"></i> บันทึก Admit และจัดกลุ่มผู้ป่วย';
   }
 </script>
 </body>
