@@ -9,11 +9,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
   <style>
-    /* ปรับแต่งการ์ดให้ดูคลีนแบบ Grid */
     .dashboard-card { border: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); background: #fff; height: 100%; transition: all 0.3s; }
-    .dashboard-card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
-    .card-header-clean { background: transparent; border-bottom: 1px solid #f0f0f0; padding: 15px 20px; font-weight: bold; }
-    .filter-box { background: #fff; padding: 15px 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    .dashboard-card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.1); transform: translateY(-3px); }
+    .card-header-clean { background: transparent; border-bottom: 1px solid #f0f0f0; padding: 15px 20px; font-weight: bold; font-size: 1.1rem; }
+    .filter-box { background: #fff; padding: 15px 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; border-left: 5px solid #3c8dbc; }
+    .sub-kpi { font-size: 0.85rem; }
+    .progress-thin { height: 8px; border-radius: 10px; }
   </style>
 </head>
 <body>
@@ -23,79 +24,116 @@
 
 <div class="content-wrapper">
   
-  <h4 class="text-secondary fw-bold mb-3"><i class="bi bi-speedometer text-primary me-2"></i> KPI Dashboard <small class="text-muted fw-normal fs-6">5-Phase Clinical Pathway</small></h4>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="text-secondary fw-bold mb-0"><i class="bi bi-speedometer text-primary me-2"></i> Executive Dashboard <small class="text-muted fw-normal fs-6">5-Phase Clinical Pathway KPIs</small></h4>
+    <button class="btn btn-outline-primary btn-sm fw-bold"><i class="bi bi-cloud-download"></i> Export PDF</button>
+  </div>
 
   <div class="filter-box d-flex flex-wrap gap-3 align-items-end">
-    <div>
-      <label class="form-label small text-muted fw-bold mb-1">ปีงบประมาณ</label>
-      <select class="form-select form-select-sm"><option>2569</option><option>2568</option></select>
-    </div>
-    <div>
-      <label class="form-label small text-muted fw-bold mb-1">ไตรมาส / เดือน</label>
-      <select class="form-select form-select-sm"><option>ไตรมาส 1 (ต.ค.-ธ.ค.)</option><option>ไตรมาส 2 (ม.ค.-มี.ค.)</option><option>ทั้งหมด</option></select>
-    </div>
-    <div>
-      <label class="form-label small text-muted fw-bold mb-1">หอผู้ป่วย</label>
-      <select class="form-select form-select-sm"><option>ทั้งหมด (ภาพรวม รพ.)</option><option>ชาย 1</option><option>หญิง 1</option></select>
-    </div>
-    <div>
-      <label class="form-label small text-muted fw-bold mb-1">ระยะ (Phase)</label>
-      <select class="form-select form-select-sm"><option>ทั้งหมด (5 ระยะ)</option><option>Phase 1</option></select>
-    </div>
-    <div class="ms-auto">
-      <button class="btn btn-primary btn-sm fw-bold px-3"><i class="bi bi-funnel-fill"></i> กรองข้อมูล</button>
-      <button class="btn btn-outline-secondary btn-sm fw-bold px-3"><i class="bi bi-printer"></i> พิมพ์รายงาน</button>
-    </div>
+    <div><label class="form-label small text-muted fw-bold mb-1">ปีงบประมาณ</label><select class="form-select form-select-sm"><option>2569</option><option>2568</option></select></div>
+    <div><label class="form-label small text-muted fw-bold mb-1">ไตรมาส / เดือน</label><select class="form-select form-select-sm"><option>ไตรมาส 1 (ต.ค.-ธ.ค.)</option><option>ไตรมาส 2 (ม.ค.-มี.ค.)</option></select></div>
+    <div><label class="form-label small text-muted fw-bold mb-1">หอผู้ป่วย</label><select class="form-select form-select-sm"><option>ทั้งหมด (ภาพรวม รพ.)</option><option>ชาย 1</option><option>หญิง 1</option></select></div>
+    <div class="ms-auto"><button class="btn btn-primary btn-sm fw-bold px-4"><i class="bi bi-arrow-clockwise"></i> อัปเดตข้อมูล</button></div>
   </div>
 
-  <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-bullseye me-2"></i> สถานะตัวชี้วัดปัจจุบัน (Current KPIs)</h6>
+  <div class="row g-3 mb-3">
+    
+    <div class="col-md-4">
+      <div class="dashboard-card border-top border-danger border-4">
+        <div class="card-header-clean text-danger"><i class="bi bi-1-circle-fill me-1"></i> Phase 1: ระยะวิกฤต (Withdrawal)</div>
+        <div class="card-body p-3">
+          <div id="gaugeAWS" class="d-flex justify-content-center"></div>
+          <div class="mt-2">
+            <div class="d-flex justify-content-between sub-kpi fw-bold text-muted mb-1"><span>อัตราเกิดพฤติกรรมรุนแรง (เป้า 0%)</span><span class="text-danger">2%</span></div>
+            <div class="progress progress-thin"><div class="progress-bar bg-danger" style="width: 2%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="dashboard-card border-top border-warning border-4">
+        <div class="card-header-clean text-warning text-dark"><i class="bi bi-2-circle-fill me-1"></i> Phase 2: ระยะฟื้นฟู (Rehab)</div>
+        <div class="card-body p-3">
+          <div id="gaugeBPRS" class="d-flex justify-content-center"></div>
+          <div class="mt-2">
+            <div class="d-flex justify-content-between sub-kpi fw-bold text-muted mb-1"><span>ไม่เกิดความคลาดเคลื่อนทางยา (เป้า 100%)</span><span class="text-success">100%</span></div>
+            <div class="progress progress-thin"><div class="progress-bar bg-success" style="width: 100%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="dashboard-card border-top border-success border-4">
+        <div class="card-header-clean text-success"><i class="bi bi-3-circle-fill me-1"></i> Phase 3: เตรียมจำหน่าย (D/C)</div>
+        <div class="card-body p-3">
+          <div id="gaugeDMETHOD" class="d-flex justify-content-center"></div>
+          <div class="mt-2">
+            <div class="d-flex justify-content-between sub-kpi fw-bold text-muted mb-1"><span>มีแผนป้องกันเสพซ้ำ Relapse (เป้า 100%)</span><span class="text-success">95%</span></div>
+            <div class="progress progress-thin"><div class="progress-bar bg-success" style="width: 95%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
   <div class="row g-3 mb-4">
-    <div class="col-md-3 col-sm-6">
-      <div class="dashboard-card border-bottom border-danger border-4">
-        <div class="card-header-clean text-danger">Phase 1: ถอนพิษลดลง</div>
-        <div class="card-body p-0 d-flex justify-content-center align-items-center">
-          <div id="gaugeAWS"></div>
+    
+    <div class="col-md-6">
+      <div class="dashboard-card border-top border-info border-4">
+        <div class="card-header-clean text-info text-dark"><i class="bi bi-4-circle-fill me-1"></i> Phase 4: ดูแลต่อเนื่อง (Continued Care)</div>
+        <div class="card-body p-3 row align-items-center">
+          <div class="col-6 border-end">
+            <div id="gaugeFollowUp" class="d-flex justify-content-center"></div>
+          </div>
+          <div class="col-6 ps-4">
+            <div class="mb-4">
+              <div class="d-flex justify-content-between sub-kpi fw-bold text-muted mb-1"><span>ผลปัสสาวะไม่พบสารเสพติด (เป้า ≥80%)</span><span class="text-primary fs-5">65%</span></div>
+              <div class="progress progress-thin"><div class="progress-bar bg-primary" style="width: 65%"></div></div>
+            </div>
+            <div>
+              <div class="d-flex justify-content-between sub-kpi fw-bold text-muted mb-1"><span>ความร่วมมือในการใช้ยา (เป้า ≥80%)</span><span class="text-info text-dark fs-5">82%</span></div>
+              <div class="progress progress-thin"><div class="progress-bar bg-info" style="width: 82%"></div></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="col-md-3 col-sm-6">
-      <div class="dashboard-card border-bottom border-warning border-4">
-        <div class="card-header-clean text-warning text-dark">Phase 2: อาการจิตดีขึ้น</div>
-        <div class="card-body p-0 d-flex justify-content-center align-items-center">
-          <div id="gaugeBPRS"></div>
+
+    <div class="col-md-6">
+      <div class="dashboard-card border-top border-primary border-4">
+        <div class="card-header-clean text-primary"><i class="bi bi-5-circle-fill me-1"></i> Phase 5: ฟื้นฟูสุขภาวะ (Recovery)</div>
+        <div class="card-body p-3 row align-items-center">
+          <div class="col-6 border-end">
+            <div id="gaugeJob" class="d-flex justify-content-center"></div>
+          </div>
+          <div class="col-6 ps-4">
+            <div class="p-3 bg-light rounded text-center">
+              <h6 class="fw-bold text-muted mb-2">อัตรากลับมารักษาซ้ำ (Re-adm < 28 วัน)</h6>
+              <h2 class="text-danger fw-bold mb-0">12%</h2>
+              <span class="badge bg-danger mt-2">สูงกว่าเป้าหมาย (เป้า ≤ 5%)</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="col-md-3 col-sm-6">
-      <div class="dashboard-card border-bottom border-success border-4">
-        <div class="card-header-clean text-success">Phase 3: ญาติผ่านเกณฑ์</div>
-        <div class="card-body p-0 d-flex justify-content-center align-items-center">
-          <div id="gaugeDMETHOD"></div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3 col-sm-6">
-      <div class="dashboard-card border-bottom border-info border-4">
-        <div class="card-header-clean text-info text-dark">Phase 4: อัตรามาตามนัด</div>
-        <div class="card-body p-0 d-flex justify-content-center align-items-center">
-          <div id="gaugeFollowUp"></div>
-        </div>
-      </div>
-    </div>
+
   </div>
 
-  <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-graph-up-arrow me-2"></i> วิเคราะห์แนวโน้มและการควบคุม (Run under Control Chart)</h6>
+  <h5 class="fw-bold text-secondary mb-3"><i class="bi bi-graph-up-arrow me-2"></i> วิเคราะห์แนวโน้ม (Trend Analysis & Control Chart)</h5>
   <div class="row g-3">
     <div class="col-md-6">
       <div class="dashboard-card">
-        <div class="card-header-clean">แนวโน้มร้อยละผู้ป่วยอาการถอนพิษลดลง (AWS ≤ 13)</div>
-        <div class="card-body"><div id="chartAWS"></div></div>
+        <div class="card-header-clean">แนวโน้มผลสำเร็จการรักษา (AWS และ BPRS ผ่านเกณฑ์)</div>
+        <div class="card-body"><div id="chartSuccess"></div></div>
       </div>
     </div>
     <div class="col-md-6">
       <div class="dashboard-card">
-        <div class="card-header-clean">แนวโน้มอัตราการมาตามนัดดูแลต่อเนื่อง (บสต.)</div>
-        <div class="card-body"><div id="chartFollowUp"></div></div>
+        <div class="card-header-clean">แนวโน้มการ Re-admission ภายใน 28 วัน (เป้าหมาย ≤ 5%)</div>
+        <div class="card-body"><div id="chartReadmit"></div></div>
       </div>
     </div>
   </div>
@@ -104,67 +142,64 @@
 
 <script src="app.js"></script>
 <script>
-  // รอให้หน้าเว็บโหลดเสร็จก่อนวาดกราฟ
   document.addEventListener("DOMContentLoaded", function() {
     
     // ==========================================
-    // ตั้งค่า Gauge Charts (RadialBar)
+    // 1. ฟังก์ชันสร้าง Gauge Chart
     // ==========================================
-    const gaugeOptions = (value, color, label) => ({
+    const gaugeOptions = (value, color, label, targetText) => ({
       series: [value],
-      chart: { type: 'radialBar', height: 220, sparkline: { enabled: true } },
+      chart: { type: 'radialBar', height: 230, sparkline: { enabled: true } },
       plotOptions: {
         radialBar: {
           startAngle: -90, endAngle: 90, track: { background: "#e7e7e7", strokeWidth: '97%', margin: 5 },
           dataLabels: {
-            name: { show: true, offsetY: 20, fontSize: '12px', color: '#888', fontFamily: 'Sarabun' },
-            value: { offsetY: -5, fontSize: '26px', fontWeight: 'bold', fontFamily: 'Sarabun', formatter: function (val) { return val + "%"; } }
+            name: { show: true, offsetY: 25, fontSize: '13px', color: '#666', fontFamily: 'Sarabun', fontWeight: 'bold' },
+            value: { offsetY: -5, fontSize: '30px', fontWeight: 'bold', fontFamily: 'Sarabun', formatter: function (val) { return val + "%"; } }
           }
         }
       },
-      colors: [color], labels: [label]
+      colors: [color], labels: [label], title: { text: targetText, align: 'center', margin: 0, offsetY: 10, style: { fontSize: '12px', color: color, fontFamily: 'Sarabun' } }
     });
 
-    // วาด Gauge 
-    new ApexCharts(document.querySelector("#gaugeAWS"), gaugeOptions(92, '#dc3545', 'เป้าหมาย ≥ 90%')).render();
-    new ApexCharts(document.querySelector("#gaugeBPRS"), gaugeOptions(85, '#ffc107', 'เป้าหมาย ≥ 80%')).render();
-    new ApexCharts(document.querySelector("#gaugeDMETHOD"), gaugeOptions(100, '#198754', 'เป้าหมาย 100%')).render();
-    new ApexCharts(document.querySelector("#gaugeFollowUp"), gaugeOptions(78, '#0dcaf0', 'เป้าหมาย ≥ 80%')).render();
-
+    // แสดงผล Gauge ทั้ง 5 Phase
+    new ApexCharts(document.querySelector("#gaugeAWS"), gaugeOptions(92, '#dc3545', 'AWS ลดลง', 'เป้าหมาย ≥ 90%')).render();
+    new ApexCharts(document.querySelector("#gaugeBPRS"), gaugeOptions(85, '#ffc107', 'BPRS ดีขึ้น', 'เป้าหมาย ≥ 80%')).render();
+    new ApexCharts(document.querySelector("#gaugeDMETHOD"), gaugeOptions(100, '#198754', 'ญาติผ่านเกณฑ์', 'เป้าหมาย 100%')).render();
+    new ApexCharts(document.querySelector("#gaugeFollowUp"), gaugeOptions(78, '#0dcaf0', 'มาตามนัด (บสต.)', 'เป้าหมาย ≥ 80%')).render();
+    new ApexCharts(document.querySelector("#gaugeJob"), gaugeOptions(45, '#0d6efd', 'ประกอบอาชีพ/เรียน', 'เป้าหมาย ≥ 60%')).render();
 
     // ==========================================
-    // ตั้งค่า Run/Control Charts (Line Chart)
+    // 2. ฟังก์ชันสร้าง Run/Control Chart
     // ==========================================
-    const runChartOptions = (dataSeries, targetValue, lineColor) => ({
-      series: [{ name: "ผลลัพธ์จริง (%)", data: dataSeries }],
-      chart: { type: 'line', height: 280, toolbar: { show: false }, fontFamily: 'Sarabun' },
-      stroke: { width: 3, curve: 'smooth' },
-      colors: [lineColor],
-      markers: { size: 5, colors: ['#fff'], strokeColors: lineColor, strokeWidth: 2 },
-      xaxis: { categories: ['ต.ค.', 'พ.ย.', 'ธ.ค.', 'ม.ค.', 'ก.พ.', 'มี.ค.'] },
-      yaxis: { min: 50, max: 100, tickAmount: 5 },
-      annotations: {
-        // เส้นเป้าหมาย (Target Line)
-        yaxis: [{
-          y: targetValue,
-          borderColor: '#ff0000',
-          strokeDashArray: 5,
-          label: { 
-            borderColor: '#ff0000', style: { color: '#fff', background: '#ff0000', fontFamily: 'Sarabun' }, 
-            text: 'เป้าหมาย (' + targetValue + '%)' 
-          }
-        }]
-      },
-      grid: { borderColor: '#f1f1f1', strokeDashArray: 4 }
-    });
+    const runChartOptions = (dataSeries, targetValue, lineColor, targetType = 'above') => {
+      // ตรวจสอบว่าผ่านเกณฑ์ไหม (ถ้าเป้าหมายคือให้ต่ำกว่า เช่น Re-admit ให้สลับสี)
+      let targetColor = targetType === 'above' ? '#198754' : '#dc3545';
+      
+      return {
+        series: [{ name: "ผลลัพธ์จริง (%)", data: dataSeries }],
+        chart: { type: 'line', height: 250, toolbar: { show: false }, fontFamily: 'Sarabun' },
+        stroke: { width: 3, curve: 'smooth' }, colors: [lineColor],
+        markers: { size: 5, colors: ['#fff'], strokeColors: lineColor, strokeWidth: 2 },
+        xaxis: { categories: ['ต.ค.', 'พ.ย.', 'ธ.ค.', 'ม.ค.', 'ก.พ.', 'มี.ค.'] },
+        yaxis: { min: 0, max: 100, tickAmount: 5 },
+        annotations: {
+          yaxis: [{
+            y: targetValue, borderColor: targetColor, strokeDashArray: 5,
+            label: { borderColor: targetColor, style: { color: '#fff', background: targetColor, fontFamily: 'Sarabun' }, text: 'เป้าหมาย (' + targetValue + '%)' }
+          }]
+        },
+        grid: { borderColor: '#f1f1f1', strokeDashArray: 4 }
+      };
+    };
 
-    // ข้อมูลจำลองสำหรับกราฟเส้น
-    const awsData = [82, 85, 89, 90, 93, 92]; // ทะลุเป้าหมายที่ 90%
-    const followUpData = [70, 72, 75, 74, 76, 78]; // ยังไม่ถึงเป้าหมายที่ 80%
-
-    // วาดกราฟเส้น
-    new ApexCharts(document.querySelector("#chartAWS"), runChartOptions(awsData, 90, '#dc3545')).render();
-    new ApexCharts(document.querySelector("#chartFollowUp"), runChartOptions(followUpData, 80, '#0dcaf0')).render();
+    // กราฟ 1: อัตราความสำเร็จ (ยิ่งสูงยิ่งดี เป้า 80%)
+    new ApexCharts(document.querySelector("#chartSuccess"), runChartOptions([75, 78, 80, 82, 85, 84], 80, '#ffc107', 'above')).render();
+    
+    // กราฟ 2: อัตรา Re-admission (ยิ่งต่ำยิ่งดี เป้า 5%)
+    let readmitChartOpt = runChartOptions([15, 12, 10, 14, 11, 12], 5, '#dc3545', 'below');
+    readmitChartOpt.yaxis.max = 30; // ปรับแกน Y ให้เหมาะสมกับข้อมูล
+    new ApexCharts(document.querySelector("#chartReadmit"), readmitChartOpt).render();
   });
 </script>
 </body>
