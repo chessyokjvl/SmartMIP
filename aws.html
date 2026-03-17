@@ -6,7 +6,6 @@
   <title>AWS - Smart MIP</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -14,13 +13,21 @@
 <div id="app-sidebar" class="sidebar-wrapper"></div>
 
 <div class="content-wrapper">
-  <h4 class="mb-3 text-secondary fw-bold"><i class="bi bi-thermometer-half text-primary me-2"></i> แบบประเมินอาการถอนแอมเฟตามีน (AWS) [cite: 38, 70]</h4>
+  <h4 class="mb-3 text-secondary fw-bold"><i class="bi bi-thermometer-half text-primary me-2"></i> แบบประเมินอาการถอนแอมเฟตามีน (AWS)</h4>
   <div class="card shadow-sm border-0 border-top border-primary border-3 mb-4">
     <div class="card-body">
+      
       <div class="row mb-3">
-        <div class="col-md-6 mb-2"><label class="fw-bold text-muted small">HN ผู้ป่วย</label><input type="text" id="aws_hn" class="form-control"></div>
-        <div class="col-md-6 mb-2"><label class="fw-bold text-muted small">ชื่อผู้ประเมิน</label><input type="text" id="aws_staff" class="form-control" readonly></div>
+        <div class="col-md-6 mb-2">
+          <label class="fw-bold text-muted small">HN ผู้ป่วย</label>
+          <input type="text" id="aws_hn" class="form-control fw-bold text-primary" placeholder="ระบุ HN">
+        </div>
+        <div class="col-md-6 mb-2">
+          <label class="fw-bold text-muted small">ชื่อผู้ประเมิน</label>
+          <input type="text" id="aws_staff" class="form-control bg-light" readonly>
+        </div>
       </div>
+
       <div class="table-responsive">
         <table class="table table-hover table-bordered align-middle">
           <thead class="table-light"><tr><th width="30%">รายการ</th><th>ระดับอาการ (คะแนน)</th></tr></thead>
@@ -37,7 +44,7 @@
       </div>
       <div class="d-flex justify-content-between align-items-center mt-3 p-3 bg-light rounded">
         <h5 class="mb-0">คะแนนรวม: <span id="aws_total_display" class="text-primary fw-bold fs-4 ms-2">0</span> <span id="aws_interpret_display" class="badge bg-success ms-2 fs-6">Normal</span></h5>
-        <button class="btn btn-primary px-4" onclick="submitAWS()" id="btnSubmitAWS"><i class="bi bi-save me-1"></i> บันทึกข้อมูล</button>
+        <button class="btn btn-primary px-4 fw-bold" onclick="submitAWS()" id="btnSubmitAWS"><i class="bi bi-save me-1"></i> บันทึกผล AWS</button>
       </div>
     </div>
   </div>
@@ -45,11 +52,24 @@
 
 <script src="app.js"></script>
 <script>
+  // ==========================================
+  // ระบบ Auto-fill (ดึงข้อมูลตอนเปิดหน้า)
+  // ==========================================
   document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
+      // ดึงชื่อผู้ประเมิน
       const staffName = sessionStorage.getItem('userName');
       if(staffName) document.getElementById('aws_staff').value = staffName;
-    }, 500);
+
+      // ดึง HN จากกระดานผู้ป่วย (ถ้ามี)
+      const activeHN = sessionStorage.getItem('activeHN');
+      const hnInput = document.getElementById('aws_hn');
+      if (activeHN) {
+        hnInput.value = activeHN;
+        hnInput.readOnly = true; // ล็อกไม่ให้แก้
+        hnInput.classList.add('bg-light'); // เปลี่ยนสีพื้นหลังให้ดูเหมือนถูกล็อก
+      }
+    }, 300); // ดีเลย์เล็กน้อยให้หน้าเว็บโหลดเสร็จก่อน
   });
 
   function calculateAWS() {
@@ -85,8 +105,14 @@
 
     const res = await callAPI('saveAWS', payload);
     alert(res.message || "เกิดข้อผิดพลาด");
-    if(res.success){ document.querySelectorAll('.aws-item').forEach(s => s.value="0"); document.getElementById('aws_hn').value=''; calculateAWS(); }
-    btn.disabled = false; btn.innerHTML = '<i class="bi bi-save me-1"></i> บันทึกข้อมูล';
+    
+    if(res.success){ 
+      document.querySelectorAll('.aws-item').forEach(s => s.value="0"); 
+      calculateAWS();
+      // ถ้าเข้าผ่านหน้ารายชื่อผู้ป่วย ให้เด้งกลับไปหน้าเดิม
+      if(sessionStorage.getItem('activeHN')) window.location.href = 'patients.html';
+    }
+    btn.disabled = false; btn.innerHTML = '<i class="bi bi-save me-1"></i> บันทึกผล AWS';
   }
 </script>
 </body>
