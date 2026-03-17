@@ -6,7 +6,12 @@
   <title>Dashboard - Smart MIP</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .kpi-card { border-radius: 10px; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; }
+    .kpi-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+    .progress { height: 12px; border-radius: 10px; }
+    .phase-badge { position: absolute; top: -15px; left: 20px; padding: 5px 15px; border-radius: 20px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+  </style>
 </head>
 <body>
 
@@ -14,9 +19,91 @@
 <div id="app-sidebar" class="sidebar-wrapper"></div>
 
 <div class="content-wrapper">
-  <h4 class="mb-4 text-secondary fw-bold"><i class="bi bi-speedometer2 me-2"></i> Dashboard <small class="text-muted fw-normal fs-6">ภาพรวมและสถิติตาม Clinical Pathway [cite: 115, 126]</small></h4>
-  <div class="alert alert-info border-0 shadow-sm border-start border-info border-4">
-    <i class="bi bi-info-circle-fill me-2"></i> ยินดีต้อนรับเข้าสู่ระบบจัดการและประเมินความเสี่ยงผู้ป่วย MIP กรุณาเลือกเมนูด้านซ้ายเพื่อเริ่มการทำงาน
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="text-secondary fw-bold mb-0"><i class="bi bi-speedometer2 text-info me-2"></i> KPI Dashboard: 5-Phase Clinical Pathway</h4>
+    <div>
+      <select class="form-select form-select-sm d-inline-block w-auto shadow-sm"><option>ไตรมาส 1 / 2569</option><option>ไตรมาส 2 / 2569</option></select>
+    </div>
+  </div>
+
+  <div class="row mt-4 pt-3">
+    
+    <div class="col-md-4 mb-4 position-relative">
+      <div class="bg-danger text-white phase-badge">Phase 1 : ระยะวิกฤต (Withdrawal)</div>
+      <div class="card kpi-card h-100 border-start border-danger border-4">
+        <div class="card-body mt-2">
+          <div class="mb-3">
+            <div class="d-flex justify-content-between small fw-bold text-muted"><span>% อาการถอนพิษลดลง (AWS ≤ 13)</span><span class="text-success">92%</span></div>
+            <div class="progress mt-1"><div class="progress-bar bg-success" style="width: 92%"></div></div>
+          </div>
+          <div>
+            <div class="d-flex justify-content-between small fw-bold text-muted"><span>% ไม่เกิดพฤติกรรมรุนแรง (SAVE Incident = 0)</span><span class="text-danger">98%</span></div>
+            <div class="progress mt-1"><div class="progress-bar bg-danger" style="width: 98%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4 position-relative">
+      <div class="bg-warning text-dark phase-badge">Phase 2 : ระยะฟื้นฟู (Rehab)</div>
+      <div class="card kpi-card h-100 border-start border-warning border-4">
+        <div class="card-body mt-2">
+          <div class="mb-3">
+            <div class="d-flex justify-content-between small fw-bold text-muted"><span>% อาการทางจิตดีขึ้น (BPRS ≤ 36)</span><span class="text-success">85%</span></div>
+            <div class="progress mt-1"><div class="progress-bar bg-success" style="width: 85%"></div></div>
+          </div>
+          <div class="text-center mt-3">
+            <h2 class="fw-bold text-warning mb-0">145 <small class="fs-6 text-muted fw-normal">เคสในระบบ</small></h2>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4 position-relative">
+      <div class="bg-success text-white phase-badge">Phase 3 : เตรียมจำหน่าย (Discharge)</div>
+      <div class="card kpi-card h-100 border-start border-success border-4">
+        <div class="card-body mt-2">
+          <div class="mb-3">
+            <div class="d-flex justify-content-between small fw-bold text-muted"><span>% ญาติผ่านประเมิน D-METHOD</span><span class="text-success">100%</span></div>
+            <div class="progress mt-1"><div class="progress-bar bg-success" style="width: 100%"></div></div>
+          </div>
+          <div class="alert alert-light border border-success p-2 small mb-0 text-center"><i class="bi bi-check-circle-fill text-success"></i> บรรลุเป้าหมายการเตรียมความพร้อมครอบครัว</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 mb-4 position-relative">
+      <div class="bg-info text-dark phase-badge">Phase 4 : ดูแลต่อเนื่อง (Continued Care)</div>
+      <div class="card kpi-card h-100 border-start border-info border-4">
+        <div class="card-body mt-2 row align-items-center">
+          <div class="col-6 border-end">
+            <h6 class="fw-bold text-muted text-center mb-1">อัตรามาตามนัด (บสต.)</h6>
+            <h2 class="text-center text-info fw-bold">78%</h2>
+          </div>
+          <div class="col-6">
+            <h6 class="fw-bold text-muted text-center mb-1">ผลปัสสาวะไม่พบสารเสพติด</h6>
+            <h2 class="text-center text-primary fw-bold">65%</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 mb-4 position-relative">
+      <div class="bg-primary text-white phase-badge">Phase 5 : ฟื้นฟูสุขภาวะ (Recovery)</div>
+      <div class="card kpi-card h-100 border-start border-primary border-4">
+        <div class="card-body mt-2 row align-items-center">
+          <div class="col-6 border-end">
+            <h6 class="fw-bold text-muted text-center mb-1">กลับไปประกอบอาชีพ/เรียน</h6>
+            <h2 class="text-center text-primary fw-bold">45%</h2>
+          </div>
+          <div class="col-6">
+            <h6 class="fw-bold text-muted text-center mb-1">อัตรา Re-admission (<28 วัน)</h6>
+            <h2 class="text-center text-danger fw-bold">12%</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
