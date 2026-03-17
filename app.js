@@ -1,7 +1,7 @@
 // ==========================================
 // 1. การตั้งค่าระบบ (System Configuration)
 // ==========================================
-const API_URL = 'https://script.google.com/macros/s/AKfycbyuYuC3kFwHOhfKaiiYtnSg2u2SfWwSJvT-utrnfMtTB9Gc8tbVIAvNKiIm9d6xAjg/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxnLldeHoduhgYb1F8fHOf4_vwz_mpyHRNJiMsATGovHqVXjguwcgEgywPJHlmEOeti/exec';
 
 // ==========================================
 // 2. ฟังก์ชันแทรก CSS อัตโนมัติ (แก้ไข Navbar ล้น)
