@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>รายชื่อผู้ป่วย - Smart Ward</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <style>
+    .patient-card { border: none; border-radius: 12px; transition: 0.3s; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .patient-card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
+    .tag-mip { border-top: 5px solid #0d6efd; }
+    .tag-schizo { border-top: 5px solid #198754; }
+    .tag-general { border-top: 5px solid #6c757d; }
+    .filter-bar { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    /* Tool Buttons in Modal */
+    .tool-btn { text-align: left; padding: 15px; border-radius: 10px; font-weight: bold; margin-bottom: 10px; transition: 0.2s; }
+    .tool-btn:hover { filter: brightness(0.95); transform: scale(1.02); }
+  </style>
+</head>
+<body>
+
+<div id="app-header"></div>
+<div id="app-sidebar" class="sidebar-wrapper"></div>
+
+<div class="content-wrapper">
+  <h4 class="mb-4 text-secondary fw-bold"><i class="bi bi-people-fill text-primary me-2"></i> กระดานรายชื่อผู้ป่วย (Patient Ward Board)</h4>
+
+  <div class="filter-bar d-flex flex-wrap gap-3 align-items-end mb-4">
+    <div>
+      <label class="form-label small fw-bold text-muted mb-1">กรองตามหอผู้ป่วย</label>
+      <select class="form-select" id="filterWard" onchange="renderPatientGrid()">
+        <option value="all">ทั้งหมด (ทุกตึก)</option>
+        <option value="พุทธรักษา (ชาย1)">พุทธรักษา (ชาย1)</option>
+        <option value="จำปาทอง (ชาย2)">จำปาทอง (ชาย2)</option>
+        <option value="ราชาวดี (ชาย3)">ราชาวดี (ชาย3)</option>
+        <option value="ลีลาวดี (หญิง)">ลีลาวดี (หญิง)</option>
+        <option value="ฉัตรชบา (พิเศษ)">ฉัตรชบา (พิเศษ)</option>
+      </select>
+    </div>
+    <div class="ms-auto">
+      <button class="btn btn-primary fw-bold" onclick="loadPatients()"><i class="bi bi-arrow-clockwise"></i> รีเฟรชข้อมูล</button>
+    </div>
+  </div>
+
+  <div id="loading" class="text-center py-5" style="display: none;">
+    <div class="spinner-border text-primary" role="status"></div>
+    <div class="mt-2 fw-bold text-muted">กำลังดึงข้อมูลผู้ป่วย...</div>
+  </div>
+
+  <div class="row g-3" id="patientGrid">
+    </div>
+</div>
+
+<div class="modal fade" id="toolsModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-light border-0">
+        <h5 class="modal-title fw-bold text-dark"><i class="bi bi-tools text-primary me-2"></i> เครื่องมือดูแลผู้ป่วย</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+          <div>
+            <h4 class="fw-bold mb-0 text-primary" id="modalHN">HN: -</h4>
+            <div class="small text-muted" id="modalWard">หอผู้ป่วย: -</div>
+          </div>
+          <div id="modalTagBadge"></div>
+        </div>
+
+        <p class="fw-bold text-muted small mb-2">เลือกแบบประเมิน/บันทึก (แสดงตามกลุ่มโรค)</p>
+        
+        <div id="dynamicToolsContainer"></div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  let allPatients = []; // เก็บข้อมูลผู้ป่วยทั้งหมดไว้ในหน่วยความจำ
+
+  document.addEventListener("DOMContentLoaded", () => {
+    loadPatients();
+  });
+
+  // 1. ดึงข้อมูลจาก API
+  async function loadPatients() {
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('patientGrid').innerHTML = '';
+    
+    const res = await callAPI('getActivePatients', {});
+    
+    document.getElementById('loading').style.display = 'none';
+    if(res.success) {
+      allPatients = res.data;
+      renderPatientGrid();
+    } else {
+      alert("เกิดข้อผิดพลาด: " + res.message);
+    }
+  }
+
+  // 2. วาด Grid การ์ดผู้ป่วย
+  function renderPatientGrid() {
+    const filterWard = document.getElementById('filterWard').value;
+    const grid = document.getElementById('patientGrid');
+    grid.innerHTML = '';
+
+    const filtered = filterWard === 'all' ? allPatients : allPatients.filter(p => p.ward === filterWard);
+
+    if(filtered.length === 0) {
+      grid.innerHTML = `<div class="col-12 text-center py-5 text-muted fw-bold">ไม่พบผู้ป่วยที่กำลังรักษา (Active) ในตึกนี้</div>`;
+      return;
+    }
+
+    filtered.forEach(p => {
+      // ตั้งค่าสีและข้อความของ Tag
+      let tagClass = 'tag-general'; let badgeColor = 'bg-secondary'; let tagName = 'ทั่วไป (Others)';
+      if(p.tag === 'MIP') { tagClass = 'tag-mip'; badgeColor = 'bg-primary'; tagName = 'MIP (F15.5)'; }
+      else if(p.tag === 'SCHIZO') { tagClass = 'tag-schizo'; badgeColor = 'bg-success'; tagName = 'Schiz (F20)'; }
+
+      // จัดรูปแบบวันที่
+      const admitD = new Date(p.admitDate).toLocaleDateString('th-TH');
+
+      const cardHTML = `
+        <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+          <div class="card patient-card h-100 ${tagClass}">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="badge ${badgeColor}">${tagName}</span>
+                <span class="small text-muted"><i class="bi bi-clock"></i> Admit: ${admitD}</span>
+              </div>
+              <h3 class="fw-bold mb-1 text-dark">HN: ${p.hn}</h3>
+              <p class="text-muted small mb-3"><i class="bi bi-building"></i> ${p.ward}</p>
+              
+              <button class="btn btn-outline-dark w-100 fw-bold" onclick='openToolsModal(${JSON.stringify(p)})'>
+                <i class="bi bi-clipboard2-pulse"></i> จัดการ/ประเมิน
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      grid.innerHTML += cardHTML;
+    });
+  }
+
+  // 3. เปิด Modal และวาดปุ่มเมนูตาม Tag
+  const toolsModal = new bootstrap.Modal(document.getElementById('toolsModal'));
+  
+  function openToolsModal(patientObj) {
+    // เซ็ตข้อมูลบนหัว Modal
+    document.getElementById('modalHN').innerText = `HN: ${patientObj.hn}`;
+    document.getElementById('modalWard').innerText = `${patientObj.ward}`;
+    
+    let badgeColor = patientObj.tag === 'MIP' ? 'bg-primary' : (patientObj.tag === 'SCHIZO' ? 'bg-success' : 'bg-secondary');
+    document.getElementById('modalTagBadge').innerHTML = `<span class="badge ${badgeColor} fs-6">${patientObj.tag}</span>`;
+
+    // บันทึก HN ปัจจุบันไว้ใน SessionStorage เพื่อให้หน้าถัดไปดึงไปใช้ได้เลย
+    sessionStorage.setItem('activeHN', patientObj.hn);
+    sessionStorage.setItem('activeTag', patientObj.tag);
+
+    // สร้างปุ่มตาม Tag (Pathway Logic)
+    const container = document.getElementById('dynamicToolsContainer');
+    let btns = '';
+
+    // เครื่องมือที่ทุกคนต้องมี (Common)
+    btns += `<a href="save.html" class="d-block text-decoration-none text-danger tool-btn bg-danger bg-opacity-10 border border-danger"><i class="bi bi-exclamation-triangle me-2"></i> 1. ประเมินความเสี่ยง (SAVE)</a>`;
+    
+    // เครื่องมือเฉพาะกลุ่ม
+    if (patientObj.tag === 'MIP') {
+      btns += `<a href="aws.html" class="d-block text-decoration-none text-primary tool-btn bg-primary bg-opacity-10 border border-primary"><i class="bi bi-thermometer-half me-2"></i> 2. ประเมินอาการถอนพิษ (AWS)</a>`;
+      btns += `<a href="bprs.html" class="d-block text-decoration-none text-success tool-btn bg-success bg-opacity-10 border border-success"><i class="bi bi-clipboard2-pulse me-2"></i> 3. ประเมินอาการทางจิต (BPRS)</a>`;
+    } 
+    else if (patientObj.tag === 'SCHIZO') {
+      btns += `<a href="bprs.html" class="d-block text-decoration-none text-success tool-btn bg-success bg-opacity-10 border border-success"><i class="bi bi-clipboard2-pulse me-2"></i> 2. ประเมินอาการทางจิต (BPRS)</a>`;
+    }
+
+    // เครื่องมืออื่นๆ
+    btns += `<a href="records.html" class="d-block text-decoration-none text-dark tool-btn bg-secondary bg-opacity-10 border border-secondary"><i class="bi bi-journal-check me-2"></i> ศูนย์รวมแบบบันทึก (ลงผล บสต., ย้ายตึก)</a>`;
+
+    container.innerHTML = btns;
+    toolsModal.show();
+  }
+</script>
+</body>
+</html>
