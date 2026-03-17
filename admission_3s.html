@@ -23,51 +23,41 @@
         <div class="col-md-3 mb-3"><label class="fw-bold text-muted small">HN ผู้ป่วย</label><input type="text" id="admit_hn" class="form-control" placeholder="ระบุ HN"></div>
         <div class="col-md-3 mb-3"><label class="fw-bold text-muted small">วันที่ Admit</label><input type="date" id="admit_date" class="form-control"></div>
         <div class="col-md-3 mb-3"><label class="fw-bold text-muted small">หอผู้ป่วยที่รับไว้</label>
-          <select class="form-select" id="admit_ward"><option value="">-- เลือกหอผู้ป่วย --</option><option>หอผู้ป่วยจิตเวชชาย 1</option><option>หอผู้ป่วยจิตเวชหญิง 1</option><option>ER</option></select>
+          <select class="form-select" id="admit_ward">
+            <option value="">-- เลือกหอผู้ป่วย --</option>
+            <option value="พุทธรักษา (ชาย1)">พุทธรักษา (ชาย1)</option>
+            <option value="จำปาทอง (ชาย2)">จำปาทอง (ชาย2)</option>
+            <option value="ราชาวดี (ชาย3)">ราชาวดี (ชาย3)</option>
+            <option value="ลีลาวดี (หญิง)">ลีลาวดี (หญิง)</option>
+            <option value="ฉัตรชบา (พิเศษ)">ฉัตรชบา (พิเศษ)</option>
+          </select>
         </div>
         <div class="col-md-3 mb-3"><label class="fw-bold text-muted small">ผู้ลงทะเบียน</label><input type="text" id="admit_staff" class="form-control" readonly></div>
       </div>
 
       <h5 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="bi bi-2-circle-fill text-primary me-2"></i> ส่วนที่ 2: แบบประเมินคัดกรองแยกกลุ่ม (Pathway Routing)</h5>
-      
       <div class="p-3 bg-light rounded mb-4">
-        <label class="fw-bold mb-2">กรุณาประเมินและระบุกลุ่มโรคหลักของผู้ป่วยเพื่อติด Tag เข้าสู่ระบบ:</label>
-        
         <div class="form-check mb-3 p-3 bg-white border rounded shadow-sm">
           <input class="form-check-input ms-1 me-2 pathway-radio" type="radio" name="pathway_criteria" value="MIP" id="c1" onchange="evaluatePathway()">
-          <label class="form-check-label text-primary fw-bold" for="c1">
-            กลุ่มที่ 1: MIP (F15.5) - โรคจิตจากเมทแอมเฟตามีน
-            <div class="small text-muted fw-normal mt-1">ประเมินและดูแลตาม Clinical Pathway 5 ระยะ (ใช้แบบประเมิน AWS, SAVE, BPRS)</div>
-          </label>
+          <label class="form-check-label text-primary fw-bold" for="c1">กลุ่มที่ 1: MIP (F15.5) - โรคจิตจากเมทแอมเฟตามีน</label>
         </div>
-        
         <div class="form-check mb-3 p-3 bg-white border rounded shadow-sm">
           <input class="form-check-input ms-1 me-2 pathway-radio" type="radio" name="pathway_criteria" value="SCHIZO" id="c2" onchange="evaluatePathway()">
-          <label class="form-check-label text-success fw-bold" for="c2">
-            กลุ่มที่ 2: Schizophrenia (F20) - โรคจิตเภท
-            <div class="small text-muted fw-normal mt-1">ประเมินและดูแลตาม Schizophrenia Care Map (ใช้แบบประเมิน SAVE, BPRS เป็นหลัก)</div>
-          </label>
+          <label class="form-check-label text-success fw-bold" for="c2">กลุ่มที่ 2: Schizophrenia (F20) - โรคจิตเภท</label>
         </div>
-        
         <div class="form-check mb-2 p-3 bg-white border rounded shadow-sm">
           <input class="form-check-input ms-1 me-2 pathway-radio" type="radio" name="pathway_criteria" value="GENERAL" id="c3" onchange="evaluatePathway()">
-          <label class="form-check-label text-secondary fw-bold" for="c3">
-            กลุ่มที่ 3: ผู้ป่วยจิตเวชทั่วไป (Others)
-            <div class="small text-muted fw-normal mt-1">ผู้ป่วยที่ไม่เข้าเกณฑ์ MIP หรือ Schiz (ซึมเศร้า, วิตกกังวล ฯลฯ) ประเมินตามมาตรฐานหอผู้ป่วย</div>
-          </label>
+          <label class="form-check-label text-secondary fw-bold" for="c3">กลุ่มที่ 3: ผู้ป่วยจิตเวชทั่วไป (Others)</label>
         </div>
       </div>
 
       <h5 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="bi bi-3-circle-fill text-primary me-2"></i> ส่วนที่ 3: สรุปการติด Tag และดำเนินการ</h5>
-      
       <div class="card border-0 shadow-sm" style="background-color: #f8f9fa;" id="pathway_result_box">
         <div class="card-body text-center py-4">
           <h5 class="text-muted mb-0" id="pathway_placeholder">กรุณาเลือกกลุ่มผู้ป่วยเพื่อประมวลผล Tag</h5>
-          
           <div id="pathway_display" style="display: none;">
             <h6 class="fw-bold mb-2">ผู้ป่วยรายนี้ถูกติด Tag ในกลุ่ม:</h6>
             <h2 class="fw-bold mb-2" id="pathway_name">-</h2>
-            <div id="pathway_desc" class="small mb-4">-</div>
             <button class="btn btn-lg fw-bold px-5" id="btnRegister" onclick="registerPatient()"><i class="bi bi-person-add me-2"></i> บันทึก Admit และติด Tag</button>
           </div>
         </div>
@@ -81,10 +71,7 @@
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('admit_date').valueAsDate = new Date();
-    setTimeout(() => {
-      const staffName = sessionStorage.getItem('userName');
-      if(staffName) document.getElementById('admit_staff').value = staffName;
-    }, 500);
+    setTimeout(() => { const staffName = sessionStorage.getItem('userName'); if(staffName) document.getElementById('admit_staff').value = staffName; }, 500);
   });
 
   function evaluatePathway() {
@@ -92,7 +79,6 @@
     const placeholder = document.getElementById('pathway_placeholder');
     const displayBox = document.getElementById('pathway_display');
     const nameEl = document.getElementById('pathway_name');
-    const descEl = document.getElementById('pathway_desc');
     const btnReg = document.getElementById('btnRegister');
     const resultBox = document.getElementById('pathway_result_box');
 
@@ -100,21 +86,13 @@
 
     if (selected === 'MIP') {
       nameEl.innerHTML = '<span class="badge bg-primary fs-3">Tag: MIP (F15.5)</span>';
-      descEl.innerHTML = 'ข้อมูลตัวชี้วัดจะถูกส่งไปประมวลผลที่ <strong>Dashboard: กลุ่ม MIP</strong> อัตโนมัติ';
-      btnReg.className = 'btn btn-primary btn-lg fw-bold px-5 text-white';
-      resultBox.style.backgroundColor = '#e7f1ff'; resultBox.style.border = '2px solid #0d6efd';
-    } 
-    else if (selected === 'SCHIZO') {
+      btnReg.className = 'btn btn-primary btn-lg fw-bold px-5 text-white'; resultBox.style.backgroundColor = '#e7f1ff'; resultBox.style.border = '2px solid #0d6efd';
+    } else if (selected === 'SCHIZO') {
       nameEl.innerHTML = '<span class="badge bg-success fs-3">Tag: Schizophrenia (F20)</span>';
-      descEl.innerHTML = 'ข้อมูลตัวชี้วัดจะถูกส่งไปประมวลผลที่ <strong>Dashboard: กลุ่ม Schiz</strong> อัตโนมัติ';
-      btnReg.className = 'btn btn-success btn-lg fw-bold px-5 text-white';
-      resultBox.style.backgroundColor = '#e8f5e9'; resultBox.style.border = '2px solid #198754';
-    }
-    else {
+      btnReg.className = 'btn btn-success btn-lg fw-bold px-5 text-white'; resultBox.style.backgroundColor = '#e8f5e9'; resultBox.style.border = '2px solid #198754';
+    } else {
       nameEl.innerHTML = '<span class="badge bg-secondary fs-3">Tag: อื่นๆ (Others)</span>';
-      descEl.innerHTML = 'ข้อมูลตัวชี้วัดจะถูกนำไปรวมใน <strong>Dashboard: กลุ่มทั่วไป</strong>';
-      btnReg.className = 'btn btn-secondary btn-lg fw-bold px-5 text-white';
-      resultBox.style.backgroundColor = '#f8f9fa'; resultBox.style.border = '2px solid #6c757d';
+      btnReg.className = 'btn btn-secondary btn-lg fw-bold px-5 text-white'; resultBox.style.backgroundColor = '#f8f9fa'; resultBox.style.border = '2px solid #6c757d';
     }
   }
 
@@ -124,30 +102,24 @@
     const staffName = sessionStorage.getItem('userName') || 'ไม่ระบุชื่อ';
     
     if(!hn) { alert('กรุณาระบุ HN ผู้ป่วย'); return; }
+    if(!document.getElementById('admit_ward').value) { alert('กรุณาเลือกหอผู้ป่วย'); return; }
 
     const btnReg = document.getElementById('btnRegister');
     btnReg.disabled = true; btnReg.innerHTML = '<span class="spinner-border spinner-border-sm"></span> กำลังบันทึก...';
 
-    // เตรียมยิง API ไปหา Code.gs (ใช้ Action เดิมที่เขียนไว้)
     const payload = {
-      hn: hn,
-      admitDate: document.getElementById('admit_date').value,
-      ward: document.getElementById('admit_ward').value,
-      s3Result: pathway, // ตอนนี้ s3Result จะเก็บค่าเป็น MIP, SCHIZO หรือ GENERAL
-      pathway: pathway === 'MIP' ? 'Smart MIP Care' : (pathway === 'SCHIZO' ? 'Schizo Care Map' : 'General Care'),
-      staffName: staffName
+      hn: hn, admitDate: document.getElementById('admit_date').value, ward: document.getElementById('admit_ward').value,
+      s3Result: pathway, pathway: pathway === 'MIP' ? 'Smart MIP Care' : (pathway === 'SCHIZO' ? 'Schizo Care Map' : 'General Care'), staffName: staffName
     };
 
     const res = await callAPI('registerAdmission', payload);
     alert(res.message || "บันทึกสำเร็จ");
     
     if(res.success){
-      document.getElementById('admit_hn').value = '';
+      document.getElementById('admit_hn').value = ''; document.getElementById('admit_ward').value = '';
       document.querySelectorAll('.pathway-radio').forEach(r => r.checked = false);
-      document.getElementById('pathway_display').style.display = 'none';
-      document.getElementById('pathway_placeholder').style.display = 'block';
-      document.getElementById('pathway_result_box').style.backgroundColor = '#f8f9fa';
-      document.getElementById('pathway_result_box').style.border = 'none';
+      document.getElementById('pathway_display').style.display = 'none'; document.getElementById('pathway_placeholder').style.display = 'block';
+      document.getElementById('pathway_result_box').style.backgroundColor = '#f8f9fa'; document.getElementById('pathway_result_box').style.border = 'none';
     }
     btnReg.disabled = false; btnReg.innerHTML = '<i class="bi bi-person-add me-2"></i> บันทึก Admit และติด Tag';
   }
