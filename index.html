@@ -45,7 +45,6 @@
     const btn = document.getElementById('btnLogin');
     const user = document.getElementById('loginUser').value;
     const pass = document.getElementById('loginPass').value;
-    
     btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> กำลังเข้าสู่ระบบ...';
     
     const res = await callAPI('login', { username: user, password: pass });
@@ -62,7 +61,7 @@
     if(response && response.success) {
       sessionStorage.setItem('userRole', response.role);
       sessionStorage.setItem('userName', response.name);
-      window.location.href = 'dashboard.html'; // ล็อกอินสำเร็จ ย้ายไปหน้า Dashboard
+      window.location.href = 'dashboard.html'; 
     } else {
       alert(response.message || 'รหัสผ่านไม่ถูกต้อง');
     }
