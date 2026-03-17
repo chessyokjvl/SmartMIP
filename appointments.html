@@ -3,51 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบนัดหมาย</title>
+  <title>ระบบนัดหมาย - Smart MIP</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Sarabun', sans-serif; background-color: #ecf0f5; overflow-x: hidden; }
-    .content-wrapper { margin-left: 250px; padding: 20px; margin-top: 56px; min-height: calc(100vh - 56px); }
-    @media (max-width: 768px) { .content-wrapper { margin-left: 0; } }
-  </style>
 </head>
 <body>
 
 <div id="app-header"></div>
-<div id="app-sidebar"></div>
+<div id="app-sidebar" class="sidebar-wrapper"></div>
 
 <div class="content-wrapper">
-  <h4 class="mb-3 text-secondary fw-bold"><i class="bi bi-calendar-check text-success me-2"></i> ระบบนัดหมาย (Appointments)</h4>
+  <h4 class="mb-3 text-secondary fw-bold"><i class="bi bi-calendar-check text-info me-2"></i> ระบบนัดหมาย (Appointments)</h4>
   
-  <div class="card shadow-sm border-0 border-top border-success border-3">
+  <div class="card shadow-sm border-0 border-top border-info border-3">
     <div class="card-body">
-      <div class="d-flex justify-content-between mb-3">
-        <input type="date" class="form-control w-25">
-        <button class="btn btn-success"><i class="bi bi-plus-circle"></i> เพิ่มนัดหมายใหม่</button>
+      <div class="d-flex flex-wrap justify-content-between mb-3 gap-2">
+        <input type="date" class="form-control w-auto" id="appointmentDate">
+        <button class="btn btn-info text-white fw-bold"><i class="bi bi-plus-circle me-1"></i> เพิ่มนัดหมายใหม่</button>
       </div>
-      <table class="table table-striped table-hover mt-3">
-        <thead class="table-dark">
-          <tr><th>เวลา</th><th>HN</th><th>ชื่อผู้ป่วย (เข้ารหัส)</th><th>ประเภทนัด</th><th>สถานะ</th><th>จัดการ</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>09:00 น.</td><td>12345/66</td><td>**ปกปิดข้อมูล**</td><td>นัดประเมิน BPRS (Phase 4)</td>
-            <td><span class="badge bg-warning text-dark">รอตรวจ</span></td>
-            <td><button class="btn btn-sm btn-outline-primary">เปิดดู</button></td>
-          </tr>
-          <tr>
-            <td>10:30 น.</td><td>67890/66</td><td>**ปกปิดข้อมูล**</td><td>ติดตามผลปัสสาวะ</td>
-            <td><span class="badge bg-success">ตรวจแล้ว</span></td>
-            <td><button class="btn btn-sm btn-outline-primary">เปิดดู</button></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mt-3 align-middle">
+          <thead class="table-dark">
+            <tr><th>เวลา</th><th>HN</th><th>ชื่อผู้ป่วย (เข้ารหัส)</th><th>ประเภทนัด</th><th>สถานะ</th><th>จัดการ</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>09:00 น.</td><td>12345/66</td><td>**ปกปิดข้อมูล**</td><td>นัดประเมิน BPRS (Phase 4)</td>
+              <td><span class="badge bg-warning text-dark">รอตรวจ</span></td>
+              <td><button class="btn btn-sm btn-outline-primary">เปิดดู</button></td>
+            </tr>
+            <tr>
+              <td>10:30 น.</td><td>67890/66</td><td>**ปกปิดข้อมูล**</td><td>ติดตามผลปัสสาวะ</td>
+              <td><span class="badge bg-success">ตรวจแล้ว</span></td>
+              <td><button class="btn btn-sm btn-outline-primary">เปิดดู</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
 
 <script src="app.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById('appointmentDate').valueAsDate = new Date();
+  });
+</script>
 </body>
 </html>
