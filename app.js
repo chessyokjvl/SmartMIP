@@ -101,11 +101,12 @@ function renderLayout() {
   if (['General', 'Admin', 'GodAdmin'].includes(role)) {
     menuHTML += `
       <li class="header">การปฏิบัติการทางคลินิก</li>
-      <li><a href="aws.html" class="nav-link ${activeClass('aws.html')}"><i class="bi bi-thermometer-half text-primary"></i> 1. ประเมิน AWS</a></li>
-      <li><a href="save.html" class="nav-link ${activeClass('save.html')}"><i class="bi bi-exclamation-triangle text-danger"></i> 2. ประเมิน SAVE</a></li>
-      <li><a href="bprs.html" class="nav-link ${activeClass('bprs.html')}"><i class="bi bi-clipboard2-pulse text-success"></i> 3. ประเมิน BPRS</a></li>
-      <li><a href="records.html" class="nav-link ${activeClass('records.html')}"><i class="bi bi-journal-text text-secondary"></i> แบบบันทึกทางคลินิก</a></li>
-      <li><a href="appointments.html" class="nav-link ${activeClass('appointments.html')}"><i class="bi bi-calendar-check text-info"></i> ระบบนัดหมาย</a></li>
+      <li><a href="admission_3s.html" class="nav-link ${activeClass('admission_3s.html')} fw-bold text-dark bg-light border-start border-primary border-4"><i class="bi bi-person-bounding-box text-primary"></i> 1. ลงทะเบียนแรกรับ (3S)</a></li>
+      <li><a href="aws.html" class="nav-link ${activeClass('aws.html')}"><i class="bi bi-thermometer-half text-danger"></i> 2. ประเมิน AWS (Phase 1)</a></li>
+      <li><a href="save.html" class="nav-link ${activeClass('save.html')}"><i class="bi bi-exclamation-triangle text-danger"></i> 3. ประเมิน SAVE (Phase 1)</a></li>
+      <li><a href="bprs.html" class="nav-link ${activeClass('bprs.html')}"><i class="bi bi-clipboard2-pulse text-warning"></i> 4. ประเมิน BPRS (Phase 2)</a></li>
+      <li><a href="records.html" class="nav-link ${activeClass('records.html')}"><i class="bi bi-journal-text text-secondary"></i> 5. แบบบันทึกทางคลินิก</a></li>
+      <li><a href="appointments.html" class="nav-link ${activeClass('appointments.html')}"><i class="bi bi-calendar-check text-info"></i> 6. ระบบนัดหมาย</a></li>
     `;
   }
   if (['Admin', 'GodAdmin'].includes(role)) {
