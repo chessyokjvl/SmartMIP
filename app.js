@@ -62,14 +62,16 @@ function checkAuth() {
 }
 
 // ==========================================
-// 4. สร้าง Navbar & Sidebar (ปรับแก้ให้ไม่ล้น)
+// 4. สร้าง Navbar & Sidebar (รองรับ 3 Pathways)
 // ==========================================
 function renderLayout() {
   const role = sessionStorage.getItem('userRole') || 'Guest';
   let name = sessionStorage.getItem('userName') || 'ผู้เยี่ยมชม';
-  const currentPage = window.location.pathname.split('/').pop() || 'index.html'; 
+  
+  // จัดการชื่อไฟล์สำหรับทำ Active Menu
+  let currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  if(currentPage === 'dashboard.html') currentPage = 'dashboard_mip.html'; // Map ชื่อเดิมให้เป็น MIP
 
-  // ปรับ Navbar ให้ใช้ flex-nowrap และตัดคำที่ยาวเกินไป
   const navbarHTML = `
     <nav class="navbar top-navbar fixed-top flex-nowrap">
       <div class="container-fluid flex-nowrap px-2">
@@ -78,7 +80,7 @@ function renderLayout() {
           <span class="navbar-brand mb-0 text-white fw-bold">
             <i class="bi bi-shield-plus me-1"></i> 
             <span class="d-none d-sm-inline">JVL Clinical Management</span>
-            <span class="d-inline d-sm-none">Smart MIP</span>
+            <span class="d-inline d-sm-none">Smart Ward</span>
           </span>
         </div>
         <div class="d-flex align-items-center text-white flex-shrink-0">
@@ -96,24 +98,31 @@ function renderLayout() {
   let menuHTML = `<ul class="sidebar-menu">`;
   const activeClass = (page) => currentPage === page ? 'active' : '';
 
-  menuHTML += `<li class="header">เมนูหลัก (MAIN NAVIGATION)</li><li><a href="dashboard.html" class="nav-link ${activeClass('dashboard.html')}"><i class="bi bi-speedometer2 text-info"></i> Dashboard (KPIs)</a></li>`;
+  // --- ส่วนที่ 1: EXECUTIVE DASHBOARDS (แยกตามกลุ่ม) ---
+  menuHTML += `<li class="header mt-2 px-3 pb-1 text-muted small fw-bold">DASHBOARD (แยกกลุ่มผู้ป่วย)</li>`;
+  menuHTML += `<li><a href="dashboard_mip.html" class="nav-link text-dark py-2 border-bottom ${activeClass('dashboard_mip.html')}"><i class="bi bi-speedometer2 me-2 text-primary"></i> 1. กลุ่ม MIP (F15.5)</a></li>`;
+  menuHTML += `<li><a href="dashboard_schizo.html" class="nav-link text-dark py-2 border-bottom ${activeClass('dashboard_schizo.html')}"><i class="bi bi-speedometer2 me-2 text-success"></i> 2. กลุ่ม Schiz (F20)</a></li>`;
+  menuHTML += `<li><a href="dashboard_general.html" class="nav-link text-dark py-2 border-bottom ${activeClass('dashboard_general.html')}"><i class="bi bi-speedometer2 me-2 text-secondary"></i> 3. กลุ่มทั่วไป (Others)</a></li>`;
 
+  // --- ส่วนที่ 2: SHARED CLINICAL TOOLS (เครื่องมือส่วนกลาง) ---
   if (['General', 'Admin', 'GodAdmin'].includes(role)) {
     menuHTML += `
-      <li class="header">การปฏิบัติการทางคลินิก</li>
-      <li><a href="admission_3s.html" class="nav-link ${activeClass('admission_3s.html')} fw-bold text-dark bg-light border-start border-primary border-4"><i class="bi bi-person-bounding-box text-primary"></i> 1. ลงทะเบียนแรกรับ (3S)</a></li>
-      <li><a href="aws.html" class="nav-link ${activeClass('aws.html')}"><i class="bi bi-thermometer-half text-danger"></i> 2. ประเมิน AWS (Phase 1)</a></li>
-      <li><a href="save.html" class="nav-link ${activeClass('save.html')}"><i class="bi bi-exclamation-triangle text-danger"></i> 3. ประเมิน SAVE (Phase 1)</a></li>
-      <li><a href="bprs.html" class="nav-link ${activeClass('bprs.html')}"><i class="bi bi-clipboard2-pulse text-warning"></i> 4. ประเมิน BPRS (Phase 2)</a></li>
-      <li><a href="records.html" class="nav-link ${activeClass('records.html')}"><i class="bi bi-journal-text text-secondary"></i> 5. แบบบันทึกทางคลินิก</a></li>
+      <li class="header mt-3 px-3 pb-1 text-muted small fw-bold">เครื่องมือปฏิบัติการทางคลินิก</li>
+      <li><a href="admission_3s.html" class="nav-link ${activeClass('admission_3s.html')} fw-bold text-dark bg-light border-start border-primary border-4"><i class="bi bi-person-bounding-box text-primary"></i> 1. ลงทะเบียนแรกรับ (ติด Tag)</a></li>
+      <li><a href="aws.html" class="nav-link ${activeClass('aws.html')}"><i class="bi bi-thermometer-half text-danger"></i> 2. ประเมิน AWS <small class="text-muted">(เฉพาะ MIP)</small></a></li>
+      <li><a href="save.html" class="nav-link ${activeClass('save.html')}"><i class="bi bi-exclamation-triangle text-danger"></i> 3. ประเมิน SAVE <small class="text-muted">(ทุกกลุ่ม)</small></a></li>
+      <li><a href="bprs.html" class="nav-link ${activeClass('bprs.html')}"><i class="bi bi-clipboard2-pulse text-warning"></i> 4. ประเมิน BPRS <small class="text-muted">(MIP/Schiz)</small></a></li>
+      <li><a href="records.html" class="nav-link ${activeClass('records.html')}"><i class="bi bi-journal-text text-secondary"></i> 5. ศูนย์รวมแบบบันทึก <small class="text-muted">(ทุกกลุ่ม)</small></a></li>
       <li><a href="appointments.html" class="nav-link ${activeClass('appointments.html')}"><i class="bi bi-calendar-check text-info"></i> 6. ระบบนัดหมาย</a></li>
     `;
   }
+
+  // --- ส่วนที่ 3: ADMIN TOOLS ---
   if (['Admin', 'GodAdmin'].includes(role)) {
-    menuHTML += `<li class="header">ADMIN TOOLS</li><li><a href="admin_structure.html" class="nav-link ${activeClass('admin_structure.html')}"><i class="bi bi-diagram-3 text-secondary"></i> จัดการโครงสร้างระบบ</a></li>`;
+    menuHTML += `<li class="header mt-3 px-3 pb-1 text-muted small fw-bold">ADMIN TOOLS</li><li><a href="admin_structure.html" class="nav-link ${activeClass('admin_structure.html')}"><i class="bi bi-diagram-3 text-secondary"></i> จัดการโครงสร้างระบบ</a></li>`;
   }
   if (role === 'GodAdmin') {
-    menuHTML += `<li class="header text-danger">GOD ADMIN</li><li><a href="admin_users.html" class="nav-link ${activeClass('admin_users.html')}"><i class="bi bi-people-fill text-danger"></i> จัดการผู้ใช้งาน</a></li><li><a href="admin_pii.html" class="nav-link ${activeClass('admin_pii.html')}"><i class="bi bi-database-fill-gear text-danger"></i> จัดการฐานข้อมูล (PII)</a></li>`;
+    menuHTML += `<li class="header mt-3 px-3 pb-1 text-danger small fw-bold">GOD ADMIN</li><li><a href="admin_users.html" class="nav-link ${activeClass('admin_users.html')}"><i class="bi bi-people-fill text-danger"></i> จัดการผู้ใช้งาน</a></li><li><a href="admin_pii.html" class="nav-link ${activeClass('admin_pii.html')}"><i class="bi bi-database-fill-gear text-danger"></i> จัดการฐานข้อมูล (PII)</a></li>`;
   }
   menuHTML += `</ul>`;
 
