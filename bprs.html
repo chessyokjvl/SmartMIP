@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BPRS - Smart MIP</title>
+  <title>BPRS - Smart Ward</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
@@ -19,14 +19,8 @@
     <div class="card-body">
       
       <div class="row mb-3">
-        <div class="col-md-6 mb-2">
-          <label class="fw-bold text-muted small">HN ผู้ป่วย</label>
-          <input type="text" id="bprs_hn" class="form-control fw-bold text-success" placeholder="ระบุ HN">
-        </div>
-        <div class="col-md-6 mb-2">
-          <label class="fw-bold text-muted small">ชื่อผู้ประเมิน</label>
-          <input type="text" id="bprs_staff" class="form-control bg-light" readonly>
-        </div>
+        <div class="col-md-6 mb-2"><label class="fw-bold text-muted small">HN ผู้ป่วย</label><input type="text" id="bprs_hn" class="form-control fw-bold text-success" placeholder="ระบุ HN"></div>
+        <div class="col-md-6 mb-2"><label class="fw-bold text-muted small">ชื่อผู้ประเมิน</label><input type="text" id="bprs_staff" class="form-control bg-light" readonly></div>
       </div>
       
       <div class="alert alert-light border border-success shadow-sm mb-4">
@@ -38,24 +32,35 @@
 
       <div class="table-responsive">
         <table class="table table-hover table-bordered align-middle">
-          <thead class="table-light text-center"><tr><th width="60%">เนื้อหาความคิดที่แสดงออกระหว่างการสัมภาษณ์</th><th width="40%">ระดับคะแนน (1-7)</th></tr></thead>
+          <thead class="table-light text-center"><tr><th width="70%">เนื้อหาความคิดที่แสดงออกระหว่างการสัมภาษณ์และการสังเกต</th><th width="30%">ระดับคะแนน (1-7)</th></tr></thead>
           <tbody>
-            <tr class="table-success"><td colspan="2" class="fw-bold text-success small">ข้อ 1-10 ให้คะแนนตามที่ผู้ป่วยบอก</td></tr>
-            <tr><td class="fw-bold text-dark">1. ความกังวลเกี่ยวกับอาการทางกาย</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1 - ไม่มีอาการ</option><option value="2">2 - มีอาการขั้นต่ำสุด</option><option value="3">3 - มีอาการเล็กน้อย</option><option value="4">4 - มีอาการปานกลาง</option><option value="5">5 - ค่อนข้างรุนแรง</option><option value="6">6 - รุนแรง</option><option value="7">7 - รุนแรงมาก</option></select></td></tr>
-            <tr><td class="fw-bold text-dark">2. อาการวิตกกังวล</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1 - ไม่มีอาการ</option><option value="2">2 - มีอาการขั้นต่ำสุด</option><option value="3">3 - มีอาการเล็กน้อย</option><option value="4">4 - มีอาการปานกลาง</option><option value="5">5 - ค่อนข้างรุนแรง</option><option value="6">6 - รุนแรง</option><option value="7">7 - รุนแรงมาก</option></select></td></tr>
-            <tr><td class="fw-bold text-dark">3. ความรู้สึกผิด</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1 - ไม่มีอาการ</option><option value="2">2 - มีอาการขั้นต่ำสุด</option><option value="3">3 - มีอาการเล็กน้อย</option><option value="4">4 - มีอาการปานกลาง</option><option value="5">5 - ค่อนข้างรุนแรง</option><option value="6">6 - รุนแรง</option><option value="7">7 - รุนแรงมาก</option></select></td></tr>
-            <tr><td class="fw-bold text-dark">4. ความคิดว่าตนเองมีความสามารถเกินจริง</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1 - ไม่มีอาการ</option><option value="2">2 - มีอาการขั้นต่ำสุด</option><option value="3">3 - มีอาการเล็กน้อย</option><option value="4">4 - มีอาการปานกลาง</option><option value="5">5 - ค่อนข้างรุนแรง</option><option value="6">6 - รุนแรง</option><option value="7">7 - รุนแรงมาก</option></select></td></tr>
-            <tr><td class="fw-bold text-dark">5. อารมณ์ซึมเศร้า</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1 - ไม่มีอาการ</option><option value="2">2 - มีอาการขั้นต่ำสุด</option><option value="3">3 - มีอาการเล็กน้อย</option><option value="4">4 - มีอาการปานกลาง</option><option value="5">5 - ค่อนข้างรุนแรง</option><option value="6">6 - รุนแรง</option><option value="7">7 - รุนแรงมาก</option></select></td></tr>
+            <tr class="table-success"><td colspan="2" class="fw-bold text-success small">ส่วนที่ 1: ข้อ 1-10 ให้คะแนนตามที่ผู้ป่วยบอก (การสัมภาษณ์)</td></tr>
+            <tr><td class="fw-bold text-dark">1. ความกังวลเกี่ยวกับอาการทางกาย (Somatic concern)</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td></tr>
+            <tr><td class="fw-bold text-dark">2. อาการวิตกกังวล (Anxiety)</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td></tr>
+            <tr><td class="fw-bold text-dark">3. ความรู้สึกผิด (Guilt feeling)</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td></tr>
+            <tr><td class="fw-bold text-dark">4. ความคิดว่าตนเองมีความสามารถเกินความจริง (Grandiosity)</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td></tr>
+            <tr><td class="fw-bold text-dark">5. อารมณ์ซึมเศร้า (Depressive mood)</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td></tr>
+            <tr><td class="fw-bold text-dark">6. ความรู้สึกไม่เป็นมิตร (Hostility)</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td></tr>
+            <tr><td class="fw-bold text-dark">7. ความรู้สึกหวาดระแวง (Suspiciousness)</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td></tr>
+            <tr><td class="fw-bold text-dark">8. อาการประสาทหลอน (Hallucination)</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td></tr>
+            <tr><td class="fw-bold text-dark">9. เนื้อหาความคิดผิดปกติ (Unusual thought content)</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td></tr>
+            <tr><td class="fw-bold text-dark">10. อาการไม่รู้เวลา สถานที่ บุคคล (Disorientation)</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td></tr>
             
-            <tr class="table-info"><td colspan="2" class="fw-bold text-info-emphasis small">ข้อ 6-18 เป็นต้นไป (จำลองตัวอย่างให้สั้นลง)</td></tr>
-            <tr><td class="fw-bold text-dark">6. อาการประสาทหลอน</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1 - ไม่มีอาการ</option><option value="2">2 - มีอาการขั้นต่ำสุด</option><option value="3">3 - มีอาการเล็กน้อย</option><option value="4">4 - มีอาการปานกลาง</option><option value="5">5 - ค่อนข้างรุนแรง</option><option value="6">6 - รุนแรง</option><option value="7">7 - รุนแรงมาก</option></select></td></tr>
-            <tr><td class="fw-bold text-dark">7. อาการตื่นเต้นกระวนกระวาย</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1 - ไม่มีอาการ</option><option value="2">2 - มีอาการขั้นต่ำสุด</option><option value="3">3 - มีอาการเล็กน้อย</option><option value="4">4 - มีอาการปานกลาง</option><option value="5">5 - ค่อนข้างรุนแรง</option><option value="6">6 - รุนแรง</option><option value="7">7 - รุนแรงมาก</option></select></td></tr>
+            <tr class="table-info"><td colspan="2" class="fw-bold text-info-emphasis small">ส่วนที่ 2: ข้อ 11-18 ให้คะแนนจากการสังเกตผู้ป่วย</td></tr>
+            <tr><td class="fw-bold text-dark">11. ความคิดสับสน (Conceptual disorientation)</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td></tr>
+            <tr><td class="fw-bold text-dark">12. การแยกตัวทางอารมณ์ (Emotional withdrawal)</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td></tr>
+            <tr><td class="fw-bold text-dark">13. ความตึงเครียด (Tension)</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td></tr>
+            <tr><td class="fw-bold text-dark">14. ท่าทางและการเคลื่อนไหวผิดปกติ (Mannerism and posturing)</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td></tr>
+            <tr><td class="fw-bold text-dark">15. การเคลื่อนไหวเชื่องช้า (Motor retardation)</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td></tr>
+            <tr><td class="fw-bold text-dark">16. การไม่ร่วมมือ (Uncooperativeness)</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td></tr>
+            <tr><td class="fw-bold text-dark">17. การแสดงอารมณ์น้อยกว่าปกติ (Blunted affect)</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td></tr>
+            <tr><td class="fw-bold text-dark">18. อาการตื่นเต้นกระวนกระวาย (Excitement)</td><td><select class="form-select bprs-item" onchange="calculateBPRS()"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td></tr>
           </tbody>
         </table>
       </div>
 
       <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 p-3 bg-white border-top shadow-sm rounded sticky-bottom" style="bottom: 10px;">
-        <h5 class="mb-0 fw-bold">คะแนนรวม: <span id="bprs_total_display" class="text-success fs-3 ms-2">7</span> <span id="bprs_interpret_display" class="badge bg-success ms-2 fs-6">มีอาการระดับน้อย</span></h5>
+        <h5 class="mb-0 fw-bold">คะแนนรวม: <span id="bprs_total_display" class="text-success fs-3 ms-2">18</span> <span id="bprs_interpret_display" class="badge bg-success ms-2 fs-6">มีอาการระดับน้อย</span></h5>
         <button class="btn btn-success px-4 mt-2 mt-md-0 fw-bold" onclick="submitBPRS()" id="btnSubmitBPRS"><i class="bi bi-save me-1"></i> บันทึกผล BPRS</button>
       </div>
     </div>
@@ -64,9 +69,6 @@
 
 <script src="app.js"></script>
 <script>
-  // ==========================================
-  // ระบบ Auto-fill
-  // ==========================================
   document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       const staffName = sessionStorage.getItem('userName');
@@ -74,11 +76,7 @@
 
       const activeHN = sessionStorage.getItem('activeHN');
       const hnInput = document.getElementById('bprs_hn');
-      if (activeHN) {
-        hnInput.value = activeHN;
-        hnInput.readOnly = true; 
-        hnInput.classList.add('bg-light');
-      }
+      if (activeHN) { hnInput.value = activeHN; hnInput.readOnly = true; hnInput.classList.add('bg-light'); }
       calculateBPRS();
     }, 300);
   });
@@ -89,7 +87,7 @@
     document.getElementById('bprs_total_display').innerText = total;
     
     let badge = document.getElementById('bprs_interpret_display');
-    if (total <= 36) { // ตัวอย่างเกณฑ์ < 36
+    if (total <= 36) {
       badge.className = 'badge bg-success ms-2 fs-6'; badge.innerText = 'มีอาการระดับน้อย';
       document.getElementById('bprs_total_display').className = 'text-success fs-3 ms-2';
     } else {
@@ -102,12 +100,9 @@
     const hn = document.getElementById('bprs_hn').value;
     if(!hn) { alert("กรุณาระบุ HN ผู้ป่วย"); return; }
     
-    // (จำลองการบันทึก)
-    alert("ระบบจำลองการประเมิน BPRS เสร็จสิ้น!");
-    
-    if(sessionStorage.getItem('activeHN')) {
-      window.location.href = 'patients.html'; // เด้งกลับหน้ากระดาน
-    }
+    // ตรงนี้ในอนาคตจะเชื่อมต่อ API ฝั่ง Apps Script ครับ
+    alert("ระบบรับทราบการบันทึก BPRS เรียบร้อยแล้ว!");
+    if(sessionStorage.getItem('activeHN')) window.location.href = 'patients.html';
   }
 </script>
 </body>
