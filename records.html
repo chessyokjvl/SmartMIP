@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>แบบบันทึก - Smart MIP</title>
+  <title>แบบบันทึกทางคลินิก - Smart MIP</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
@@ -13,61 +13,86 @@
 <div id="app-sidebar" class="sidebar-wrapper"></div>
 
 <div class="content-wrapper">
-  <h4 class="mb-4 text-secondary fw-bold"><i class="bi bi-journal-check text-primary me-2"></i> ศูนย์รวมแบบบันทึกทางคลินิก <small class="text-muted fw-normal fs-6">เพื่อรวบรวมตัวชี้วัด (KPIs)</small></h4>
+  <h4 class="mb-4 text-secondary fw-bold"><i class="bi bi-journal-check text-primary me-2"></i> ศูนย์รวมแบบบันทึกทางคลินิก <small class="text-muted fw-normal fs-6">Data Entry เพื่อ KPI</small></h4>
   
   <div class="card shadow-sm border-0">
-    <div class="card-header bg-white border-bottom-0 pt-3 pb-0">
-      <ul class="nav nav-tabs" id="recordTabs" role="tablist">
-        <li class="nav-item"><button class="nav-link active fw-bold text-danger" data-bs-toggle="tab" data-bs-target="#tab1">1. อุบัติการณ์ SAVE</button></li>
-        <li class="nav-item"><button class="nav-link fw-bold text-success" data-bs-toggle="tab" data-bs-target="#tab7">3. D-METHOD (Phase 3)</button></li>
-        <li class="nav-item"><button class="nav-link fw-bold text-info" data-bs-toggle="tab" data-bs-target="#tab4">4. ติดตาม บสต. & ปัสสาวะ (Phase 4)</button></li>
-        <li class="nav-item"><button class="nav-link fw-bold text-primary" data-bs-toggle="tab" data-bs-target="#tab6">5. ประกอบอาชีพ (Phase 5)</button></li>
-        <li class="nav-item"><button class="nav-link fw-bold text-secondary" data-bs-toggle="tab" data-bs-target="#tabOther">บันทึกอื่นๆ (ADR/Refer)</button></li>
+    <div class="card-header bg-white border-bottom-0 pt-3 pb-0 overflow-auto">
+      <ul class="nav nav-tabs flex-nowrap" id="recordTabs" role="tablist" style="white-space: nowrap;">
+        <li class="nav-item"><button class="nav-link active fw-bold text-dark" data-bs-toggle="tab" data-bs-target="#tabAdmit"><i class="bi bi-person-lines-fill"></i> รับ/จำหน่าย</button></li>
+        <li class="nav-item"><button class="nav-link fw-bold text-danger" data-bs-toggle="tab" data-bs-target="#tab1">อุบัติการณ์</button></li>
+        <li class="nav-item"><button class="nav-link fw-bold text-success" data-bs-toggle="tab" data-bs-target="#tab7">D-METHOD</button></li>
+        <li class="nav-item"><button class="nav-link fw-bold text-info" data-bs-toggle="tab" data-bs-target="#tab4">บสต. (Phase 4)</button></li>
+        <li class="nav-item"><button class="nav-link fw-bold text-primary" data-bs-toggle="tab" data-bs-target="#tab6">Recovery (Phase 5)</button></li>
+        <li class="nav-item"><button class="nav-link fw-bold text-secondary" data-bs-toggle="tab" data-bs-target="#tabOther">Med Error</button></li>
       </ul>
     </div>
     
     <div class="card-body p-4 bg-light">
       <div class="tab-content" id="recordTabsContent">
         
-        <div class="tab-pane fade show active" id="tab1">
-          <h5 class="fw-bold text-danger mb-3"><i class="bi bi-exclamation-octagon"></i> แบบบันทึกอุบัติการณ์ กลุ่ม SAVE (Phase 1-2)</h5>
-          <div class="row"><div class="col-md-4 mb-3"><label>HN ผู้ป่วย</label><input type="text" class="form-control"></div><div class="col-md-4 mb-3"><label>วันที่เกิดเหตุ</label><input type="date" class="form-control"></div></div>
-          <label>ประเภทอุบัติการณ์ที่เกิดขึ้นจริง (KPI Defect)</label>
-          <select class="form-select mb-3 w-50"><option>-- เลือกอุบัติการณ์ --</option><option value="S">พยายามฆ่าตัวตาย (S)</option><option value="A">เกิดอุบัติเหตุพลัดตกหกล้ม (A)</option><option value="V">ทำร้ายผู้อื่น/ทรัพย์สินเสียหาย (V)</option><option value="E">หลบหนีสำเร็จ (E)</option></select>
+        <div class="tab-pane fade show active" id="tabAdmit">
+          <h5 class="fw-bold text-dark mb-3"><i class="bi bi-person-lines-fill"></i> ระบบลงทะเบียนและจำหน่ายผู้ป่วย MIP (เพื่อคำนวณ Re-admission)</h5>
+          <div class="row">
+            <div class="col-md-6 mb-3"><label class="fw-bold text-muted small">HN ผู้ป่วย</label><input type="text" class="form-control" placeholder="ระบุ HN"></div>
+            <div class="col-md-6 mb-3"><label class="fw-bold text-muted small">สถานะ</label>
+              <select class="form-select"><option value="admit">รับใหม่ (Admission)</option><option value="discharge">จำหน่าย (Discharge)</option></select>
+            </div>
+            <div class="col-md-6 mb-3"><label class="fw-bold text-muted small">วันที่ดำเนินการ</label><input type="date" class="form-control"></div>
+            <div class="col-md-6 mb-3"><label class="fw-bold text-muted small">ประเภทการจำหน่าย (เฉพาะกรณี Discharge)</label>
+              <select class="form-select"><option value="">-- เลือก --</option><option value="improved">กลับบ้าน (Improved)</option><option value="refer">ส่งต่อ (Refer)</option><option value="escape">หนีกลับ (Escape)</option></select>
+            </div>
+          </div>
+          <button class="btn btn-dark"><i class="bi bi-save"></i> บันทึกข้อมูลทะเบียน</button>
+        </div>
+
+        <div class="tab-pane fade" id="tab1">
+          <h5 class="fw-bold text-danger mb-3"><i class="bi bi-exclamation-octagon"></i> แบบบันทึกอุบัติการณ์ กลุ่ม SAVE</h5>
+          <div class="row"><div class="col-md-6 mb-3"><label class="fw-bold text-muted small">HN ผู้ป่วย</label><input type="text" class="form-control"></div><div class="col-md-6 mb-3"><label class="fw-bold text-muted small">วันที่เกิดเหตุ</label><input type="date" class="form-control"></div></div>
+          <label class="fw-bold text-muted small">ประเภทอุบัติการณ์ที่เกิดขึ้นจริง (KPI Defect)</label>
+          <select class="form-select mb-3 w-100 w-md-50"><option value="">-- เลือกอุบัติการณ์ --</option><option value="S">พยายามฆ่าตัวตาย (S)</option><option value="A">เกิดอุบัติเหตุพลัดตกหกล้ม (A)</option><option value="V">ทำร้ายผู้อื่น/ทรัพย์สินเสียหาย (V)</option><option value="E">หลบหนีสำเร็จ (E)</option></select>
           <button class="btn btn-danger"><i class="bi bi-save"></i> บันทึกอุบัติการณ์</button>
         </div>
 
         <div class="tab-pane fade" id="tab7">
           <h5 class="fw-bold text-success mb-3"><i class="bi bi-house-heart"></i> แบบประเมินความรู้ญาติ D-METHOD (Phase 3)</h5>
-          <div class="row"><div class="col-md-4 mb-3"><label>HN ผู้ป่วย</label><input type="text" class="form-control"></div><div class="col-md-4 mb-3"><label>ผู้รับการประเมิน</label><input type="text" class="form-control" placeholder="ชื่อญาติ"></div></div>
-          <label>ผลการประเมินความพร้อม (KPI: % ญาติผ่านเกณฑ์)</label>
-          <select class="form-select mb-3 w-50"><option value="pass">ผ่านเกณฑ์ (เข้าใจการดูแลและรับยากลับบ้าน)</option><option value="fail">ไม่ผ่านเกณฑ์ (ต้องให้สุขศึกษาซ้ำ)</option></select>
+          <div class="row"><div class="col-md-6 mb-3"><label class="fw-bold text-muted small">HN ผู้ป่วย</label><input type="text" class="form-control"></div><div class="col-md-6 mb-3"><label class="fw-bold text-muted small">ผู้รับการประเมิน</label><input type="text" class="form-control" placeholder="ชื่อญาติ"></div></div>
+          <label class="fw-bold text-muted small">ผลการประเมินความพร้อม (KPI: % ญาติผ่านเกณฑ์)</label>
+          <select class="form-select mb-3 w-100 w-md-50"><option value="pass">ผ่านเกณฑ์ (เข้าใจการดูแลและรับยากลับบ้าน)</option><option value="fail">ไม่ผ่านเกณฑ์ (ต้องให้สุขศึกษาซ้ำ)</option></select>
           <button class="btn btn-success"><i class="bi bi-save"></i> บันทึกผล D-METHOD</button>
         </div>
 
         <div class="tab-pane fade" id="tab4">
-          <h5 class="fw-bold text-info mb-3"><i class="bi bi-bezier2"></i> แบบบันทึกติดตามระบบ บสต. และตรวจปัสสาวะ (Phase 4)</h5>
-          <div class="row"><div class="col-md-4 mb-3"><label>HN ผู้ป่วย</label><input type="text" class="form-control"></div><div class="col-md-4 mb-3"><label>ครั้งที่นัดหมาย</label><input type="number" class="form-control" min="1" value="1"></div></div>
+          <h5 class="fw-bold text-info mb-3"><i class="bi bi-bezier2"></i> ติดตามดูแลต่อเนื่อง (Phase 4)</h5>
+          <div class="row"><div class="col-md-6 mb-3"><label class="fw-bold text-muted small">HN ผู้ป่วย</label><input type="text" class="form-control"></div><div class="col-md-6 mb-3"><label class="fw-bold text-muted small">วันที่ติดตาม</label><input type="date" class="form-control"></div></div>
           
-          <label class="fw-bold text-primary mt-2">1. การมาตามนัด (KPI: Follow-up Rate)</label>
-          <select class="form-select mb-3 w-50"><option value="yes">มาตามนัด</option><option value="no">ขาดนัด/ไม่สามารถติดต่อได้</option></select>
-          
-          <label class="fw-bold text-primary">2. ผลตรวจปัสสาวะ (KPI: Urine Negative Rate)</label>
-          <select class="form-select mb-3 w-50"><option value="negative">Negative (ไม่พบสารเสพติด)</option><option value="positive">Positive (พบสารเสพติด - กลับไปเสพซ้ำ)</option><option value="nt">ไม่ได้ตรวจ</option></select>
-          <button class="btn btn-info text-white"><i class="bi bi-save"></i> บันทึกผลติดตาม</button>
+          <div class="card border-info mb-3"><div class="card-body">
+            <label class="fw-bold text-primary small">1. การมาตามนัด (Follow-up)</label>
+            <select class="form-select mb-3"><option value="yes">มาตามนัด</option><option value="no">ขาดนัด/ติดต่อไม่ได้</option></select>
+            
+            <label class="fw-bold text-primary small">2. ผลตรวจปัสสาวะหาสารเสพติด</label>
+            <select class="form-select mb-3"><option value="negative">Negative (ไม่พบสาร)</option><option value="positive">Positive (พบสาร - กลับไปเสพซ้ำ)</option><option value="nt">ไม่ได้ตรวจ</option></select>
+            
+            <label class="fw-bold text-primary small">3. ความร่วมมือในการใช้ยา (Medication Adherence)</label>
+            <select class="form-select"><option value="good">รับประทานยาสม่ำเสมอ (>80%)</option><option value="poor">รับประทานยาไม่สม่ำเสมอ/ขาดยา</option></select>
+          </div></div>
+          <button class="btn btn-info text-white fw-bold"><i class="bi bi-save"></i> บันทึกผลติดตาม บสต.</button>
         </div>
 
         <div class="tab-pane fade" id="tab6">
-          <h5 class="fw-bold text-primary mb-3"><i class="bi bi-briefcase"></i> แบบบันทึกการกลับไปประกอบอาชีพ (Phase 5)</h5>
-          <div class="row"><div class="col-md-4 mb-3"><label>HN ผู้ป่วย</label><input type="text" class="form-control"></div><div class="col-md-4 mb-3"><label>วันที่ติดตามผล</label><input type="date" class="form-control"></div></div>
-          <label>สถานะการประกอบอาชีพ (KPI: Employment Rate)</label>
-          <select class="form-select mb-3 w-50"><option value="work">ประกอบอาชีพ / ศึกษาต่อ (ฟื้นฟูสำเร็จ)</option><option value="nowork">ว่างงาน / อยู่บ้าน</option><option value="jail">ต้องโทษ / สถาบันอื่น</option></select>
-          <button class="btn btn-primary"><i class="bi bi-save"></i> บันทึกข้อมูล Recovery</button>
+          <h5 class="fw-bold text-primary mb-3"><i class="bi bi-briefcase"></i> บันทึกการกลับไปประกอบอาชีพ (Phase 5)</h5>
+          <div class="row"><div class="col-md-6 mb-3"><label class="fw-bold text-muted small">HN ผู้ป่วย</label><input type="text" class="form-control"></div><div class="col-md-6 mb-3"><label class="fw-bold text-muted small">วันที่ติดตาม</label><input type="date" class="form-control"></div></div>
+          <label class="fw-bold text-muted small">สถานะปัจจุบัน (KPI: Employment Rate)</label>
+          <select class="form-select mb-3 w-100 w-md-50"><option value="work">ประกอบอาชีพ / ศึกษาต่อ (ฟื้นฟูสำเร็จ)</option><option value="nowork">ว่างงาน / อยู่บ้าน</option><option value="jail">ต้องโทษ / สถาบันอื่น</option></select>
+          <button class="btn btn-primary"><i class="bi bi-save"></i> บันทึก Recovery</button>
         </div>
 
         <div class="tab-pane fade" id="tabOther">
-          <h5 class="fw-bold text-secondary mb-3"><i class="bi bi-journal-plus"></i> บันทึก ADR และส่งต่อภาวะแทรกซ้อน</h5>
-          <div class="alert alert-secondary">ระบบเปิดให้บันทึกแบบฟอร์มรายงานคุณภาพแยกส่วน เพื่อรวบรวมเป็นรายงานความเสี่ยง (RM) ของโรงพยาบาล</div>
+          <h5 class="fw-bold text-secondary mb-3"><i class="bi bi-capsule"></i> บันทึกความคลาดเคลื่อนทางยา (Medication Error)</h5>
+          <div class="alert alert-warning border-0 shadow-sm"><i class="bi bi-info-circle me-2"></i> ข้อมูลส่วนนี้ใช้คำนวณ KPI: ไม่เกิดความคลาดเคลื่อนทางยาในระยะฟื้นฟู (Phase 2)</div>
+          <div class="row"><div class="col-md-6 mb-3"><label class="fw-bold text-muted small">HN ผู้ป่วย</label><input type="text" class="form-control"></div><div class="col-md-6 mb-3"><label class="fw-bold text-muted small">วันที่เกิดความคลาดเคลื่อน</label><input type="date" class="form-control"></div></div>
+          <label class="fw-bold text-muted small">ระดับความรุนแรง (Severity Level)</label>
+          <select class="form-select mb-3 w-100 w-md-50"><option value="A">A: เกิดเหตุการณ์แต่ยังไม่ถึงผู้ป่วย</option><option value="C">C: ถึงผู้ป่วยแต่ไม่เป็นอันตราย</option><option value="E">E: เกิดอันตรายชั่วคราวต้องรักษา</option><option value="I">I: เสียชีวิต</option></select>
+          <button class="btn btn-secondary"><i class="bi bi-save"></i> บันทึก Med Error</button>
         </div>
 
       </div>
