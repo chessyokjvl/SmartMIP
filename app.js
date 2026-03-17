@@ -1,18 +1,62 @@
 // ==========================================
-// การตั้งค่าระบบ (System Configuration)
+// 1. การตั้งค่าระบบ (System Configuration)
 // ==========================================
-// URL ของ Google Apps Script Web App (อัปเดตล่าสุด)
 const API_URL = 'https://script.google.com/macros/s/AKfycbyuYuC3kFwHOhfKaiiYtnSg2u2SfWwSJvT-utrnfMtTB9Gc8tbVIAvNKiIm9d6xAjg/exec';
 
 // ==========================================
-// 1. ฟังก์ชันเชื่อมต่อฐานข้อมูล (API Fetcher)
+// 2. ฟังก์ชันแทรก CSS อัตโนมัติ (Dynamic CSS Injection)
+// แก้ปัญหา Layout พัง หรือ Sidebar เต็มจอ
+// ==========================================
+function injectThemeCSS() {
+  const path = window.location.pathname.split('/').pop() || 'index.html';
+  if (path === 'index.html' || path === '') return; // ไม่ต้องใส่ Theme ให้หน้า Login
+
+  if (document.getElementById('jvl-theme-styles')) return; 
+  const style = document.createElement('style');
+  style.id = 'jvl-theme-styles';
+  style.innerHTML = `
+    /* --- รูปแบบหลัก (Global) --- */
+    body { font-family: 'Sarabun', sans-serif; background-color: #ecf0f5; overflow-x: hidden; }
+    
+    /* --- แถบเมนูด้านบน (Top Navbar) --- */
+    .top-navbar { background-color: #3c8dbc; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 1050; padding: 0.5rem 1rem; }
+    .navbar-brand { font-weight: 600; font-size: 1.2rem; }
+    
+    /* --- แถบเมนูด้านซ้าย (Sidebar) --- */
+    .sidebar-wrapper { width: 250px; height: calc(100vh - 56px); background-color: #f9fafc; border-right: 1px solid #d2d6de; position: fixed; top: 56px; left: 0; transition: all 0.3s ease; z-index: 1040; overflow-y: auto; }
+    .sidebar-menu { list-style: none; padding: 0; margin: 0; }
+    .sidebar-menu li.header { padding: 10px 25px 10px 15px; font-size: 12px; color: #848484; background: #f9fafc; font-weight: bold; text-transform: uppercase; }
+    .sidebar-menu li a { display: block; padding: 12px 15px; color: #444; text-decoration: none; border-left: 3px solid transparent; border-bottom: 1px solid #f4f4f4; font-size: 0.95rem; transition: all 0.2s; cursor: pointer; }
+    .sidebar-menu li a:hover, .sidebar-menu li a.active { background-color: #f4f4f5; color: #3c8dbc; border-left-color: #3c8dbc; font-weight: 600; }
+    .sidebar-menu li a i { width: 25px; text-align: center; color: #666; font-size: 1.1rem; }
+    .sidebar-menu li a:hover i, .sidebar-menu li a.active i { color: #3c8dbc; }
+    
+    /* --- พื้นที่เนื้อหาหลัก (Content Wrapper) --- */
+    .content-wrapper { margin-left: 250px; padding: 20px; margin-top: 56px; min-height: calc(100vh - 56px); transition: all 0.3s ease; }
+    
+    /* --- หน้าจอเงาดำตอนเปิดเมนูมือถือ (Overlay) --- */
+    .sidebar-overlay { display: none; position: fixed; top: 56px; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1035; }
+    .sidebar-overlay.show { display: block; }
+    
+    /* --- รองรับมือถือ (Responsive) --- */
+    @media (max-width: 768px) {
+      .sidebar-wrapper { left: -250px; box-shadow: 3px 0 10px rgba(0,0,0,0.1); }
+      .sidebar-wrapper.show { left: 0; }
+      .content-wrapper { margin-left: 0; }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+// ==========================================
+// 3. ฟังก์ชันเชื่อมต่อฐานข้อมูล (API Fetcher)
 // ==========================================
 async function callAPI(action, dataObj) {
   try {
     const response = await fetch(API_URL, {
       method: 'POST',
-      redirect: 'follow', // จำเป็นมาก: สั่งให้วิ่งตามการ Redirect ของ Google
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // จำเป็นมาก: เลี่ยงปัญหา CORS Preflight
+      redirect: 'follow',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ action: action, data: dataObj })
     });
     return await response.json();
@@ -24,22 +68,16 @@ async function callAPI(action, dataObj) {
 }
 
 // ==========================================
-// 2. ฟังก์ชันตรวจสอบสิทธิ์ (Authentication Check)
+// 4. ฟังก์ชันตรวจสอบสิทธิ์ (Auth Check)
 // ==========================================
 function checkAuth() {
   const role = sessionStorage.getItem('userRole');
-  const path = window.location.pathname.split('/').pop() || 'index.html'; // ดึงชื่อไฟล์ปัจจุบัน
+  const path = window.location.pathname.split('/').pop() || 'index.html';
   
-  // อนุญาตให้หน้า index.html (หน้า Login) ไม่ต้องเช็คสิทธิ์
   if (path === 'index.html' || path === '') {
-    // ถ้า Login แล้ว แต่เผลอกดมาหน้า Login ให้เด้งไป Dashboard เลย
-    if (role) {
-      window.location.href = 'dashboard.html';
-    }
+    if (role) window.location.href = 'dashboard.html';
     return;
   }
-
-  // ถ้าเข้าหน้าอื่นแต่ยังไม่ Login ให้เตะกลับไปหน้า Login
   if (!role) {
     alert("กรุณาเข้าสู่ระบบก่อนใช้งาน");
     window.location.href = 'index.html';
@@ -47,16 +85,16 @@ function checkAuth() {
 }
 
 // ==========================================
-// 3. ฟังก์ชันสร้างโครงร่าง UI (Render Layout)
+// 5. ฟังก์ชันสร้างโครงร่าง UI (Render Layout)
 // ==========================================
 function renderLayout() {
   const role = sessionStorage.getItem('userRole') || 'Guest';
   const name = sessionStorage.getItem('userName') || 'ผู้เยี่ยมชม';
-  const currentPage = window.location.pathname.split('/').pop() || 'index.html'; // สำหรับทำ Highlight เมนู
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html'; 
 
-  // --- 3.1 สร้างแถบด้านบน (Navbar) ---
+  // --- Navbar ---
   const navbarHTML = `
-    <nav class="navbar top-navbar fixed-top" style="background-color: #3c8dbc; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 1050;">
+    <nav class="navbar top-navbar fixed-top">
       <div class="container-fluid">
         <div class="d-flex align-items-center">
           <button class="btn btn-sm btn-outline-light me-2 d-md-none" onclick="toggleSidebar()"><i class="bi bi-list fs-5"></i></button>
@@ -71,57 +109,47 @@ function renderLayout() {
     </nav>
   `;
 
-  // --- 3.2 สร้างเมนูด้านซ้าย (Sidebar) ตามสิทธิ์ ---
-  let menuHTML = `<ul class="sidebar-menu" style="list-style: none; padding: 0; margin: 0;">`;
-  
-  // ฟังก์ชันตัวช่วยสำหรับเช็คเมนูที่กำลังเปิดอยู่
+  // --- Sidebar ---
+  let menuHTML = `<ul class="sidebar-menu">`;
   const activeClass = (page) => currentPage === page ? 'active' : '';
 
-  // เมนูที่ทุกคนเห็น (รวม Guest)
   menuHTML += `
-    <li class="header mt-2 px-3 pb-1 text-muted small fw-bold">เมนูหลัก (MAIN NAVIGATION)</li>
-    <li><a href="dashboard.html" class="nav-link text-dark py-2 border-bottom ${activeClass('dashboard.html')}"><i class="bi bi-speedometer2 me-2 text-info"></i> Dashboard (KPIs)</a></li>
+    <li class="header">เมนูหลัก (MAIN NAVIGATION)</li>
+    <li><a href="dashboard.html" class="nav-link ${activeClass('dashboard.html')}"><i class="bi bi-speedometer2 text-info"></i> Dashboard (KPIs)</a></li>
   `;
 
-  // เมนูสำหรับ General, Admin, GodAdmin
   if (['General', 'Admin', 'GodAdmin'].includes(role)) {
     menuHTML += `
-      <li class="header mt-3 px-3 pb-1 text-muted small fw-bold">การปฏิบัติการทางคลินิก</li>
-      <li><a href="aws.html" class="nav-link text-dark py-2 border-bottom ${activeClass('aws.html')}"><i class="bi bi-thermometer-half me-2 text-primary"></i> 1. ประเมิน AWS</a></li>
-      <li><a href="save.html" class="nav-link text-dark py-2 border-bottom ${activeClass('save.html')}"><i class="bi bi-exclamation-triangle me-2 text-danger"></i> 2. ประเมิน SAVE</a></li>
-      <li><a href="bprs.html" class="nav-link text-dark py-2 border-bottom ${activeClass('bprs.html')}"><i class="bi bi-clipboard2-pulse me-2 text-success"></i> 3. ประเมิน BPRS</a></li>
-      
-      <li><a href="records.html" class="nav-link text-dark py-2 border-bottom ${activeClass('records.html')}"><i class="bi bi-journal-text me-2 text-secondary"></i> แบบบันทึกต่างๆ</a></li>
-      <li><a href="appointments.html" class="nav-link text-dark py-2 border-bottom ${activeClass('appointments.html')}"><i class="bi bi-calendar-check me-2 text-info"></i> ระบบนัดหมาย</a></li>
+      <li class="header">การปฏิบัติการทางคลินิก</li>
+      <li><a href="aws.html" class="nav-link ${activeClass('aws.html')}"><i class="bi bi-thermometer-half text-primary"></i> 1. ประเมิน AWS</a></li>
+      <li><a href="save.html" class="nav-link ${activeClass('save.html')}"><i class="bi bi-exclamation-triangle text-danger"></i> 2. ประเมิน SAVE</a></li>
+      <li><a href="bprs.html" class="nav-link ${activeClass('bprs.html')}"><i class="bi bi-clipboard2-pulse text-success"></i> 3. ประเมิน BPRS</a></li>
+      <li><a href="records.html" class="nav-link ${activeClass('records.html')}"><i class="bi bi-journal-text text-secondary"></i> แบบบันทึกต่างๆ</a></li>
+      <li><a href="appointments.html" class="nav-link ${activeClass('appointments.html')}"><i class="bi bi-calendar-check text-info"></i> ระบบนัดหมาย</a></li>
     `;
   }
 
-  // เมนูสำหรับ Admin, GodAdmin
   if (['Admin', 'GodAdmin'].includes(role)) {
     menuHTML += `
-      <li class="header mt-3 px-3 pb-1 text-muted small fw-bold">ADMIN TOOLS</li>
-      <li><a href="admin_structure.html" class="nav-link text-dark py-2 border-bottom ${activeClass('admin_structure.html')}"><i class="bi bi-diagram-3 me-2 text-secondary"></i> จัดการโครงสร้างระบบ</a></li>
+      <li class="header">ADMIN TOOLS</li>
+      <li><a href="admin_structure.html" class="nav-link ${activeClass('admin_structure.html')}"><i class="bi bi-diagram-3 text-secondary"></i> จัดการโครงสร้างระบบ</a></li>
     `;
   }
 
-  // เมนูสำหรับ GodAdmin เท่านั้น
   if (role === 'GodAdmin') {
     menuHTML += `
-      <li class="header mt-3 px-3 pb-1 text-danger small fw-bold">GOD ADMIN</li>
-      <li><a href="admin_users.html" class="nav-link text-dark py-2 border-bottom ${activeClass('admin_users.html')}"><i class="bi bi-people-fill me-2 text-danger"></i> จัดการผู้ใช้งาน</a></li>
-      <li><a href="admin_pii.html" class="nav-link text-dark py-2 border-bottom ${activeClass('admin_pii.html')}"><i class="bi bi-database-fill-gear me-2 text-danger"></i> จัดการฐานข้อมูล (PII)</a></li>
+      <li class="header text-danger">GOD ADMIN</li>
+      <li><a href="admin_users.html" class="nav-link ${activeClass('admin_users.html')}"><i class="bi bi-people-fill text-danger"></i> จัดการผู้ใช้งาน</a></li>
+      <li><a href="admin_pii.html" class="nav-link ${activeClass('admin_pii.html')}"><i class="bi bi-database-fill-gear text-danger"></i> จัดการฐานข้อมูล (PII)</a></li>
     `;
   }
-
   menuHTML += `</ul>`;
 
-  // --- 3.3 นำ HTML ไปใส่ใน DOM ของหน้าเว็บ ---
   const headerDiv = document.getElementById('app-header');
   const sidebarDiv = document.getElementById('app-sidebar');
   
   if (headerDiv) headerDiv.innerHTML = navbarHTML;
   if (sidebarDiv) {
-    // เพิ่ม Overlay สำหรับมือถืออัตโนมัติ
     sidebarDiv.innerHTML = menuHTML;
     if (!document.getElementById('sidebarOverlay')) {
       const overlay = document.createElement('div');
@@ -134,9 +162,8 @@ function renderLayout() {
 }
 
 // ==========================================
-// 4. ฟังก์ชันควบคุม UI และการทำงานทั่วไป
+// 6. ฟังก์ชันควบคุม UI
 // ==========================================
-// เปิด-ปิด เมนูในโหมดมือถือ (Hamburger Menu)
 function toggleSidebar() {
   const sidebar = document.getElementById('app-sidebar');
   const overlay = document.getElementById('sidebarOverlay');
@@ -144,7 +171,6 @@ function toggleSidebar() {
   if (overlay) overlay.classList.toggle('show');
 }
 
-// ฟังก์ชันออกจากระบบ
 function logout() {
   if (confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) {
     sessionStorage.clear();
@@ -153,12 +179,11 @@ function logout() {
 }
 
 // ==========================================
-// 5. สั่งรันฟังก์ชันทันทีเมื่อโหลดหน้าเว็บเสร็จ
+// 7. สั่งรันฟังก์ชันทันที
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
-  checkAuth(); // ตรวจสอบสิทธิ์ก่อนเป็นอันดับแรก
-  
-  // ถ้ามีกล่อง Header/Sidebar ค่อยวาด UI (ป้องกัน Error ในหน้า index.html ที่ไม่มีกล่องเหล่านี้)
+  injectThemeCSS(); // วาง CSS ก่อนเพื่อนเลย
+  checkAuth();
   if(document.getElementById('app-header') && document.getElementById('app-sidebar')) {
     renderLayout();
   }
