@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAVE Assessment</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Sarabun', sans-serif; background-color: #ecf0f5; overflow-x: hidden; }
+    #app-sidebar { width: 250px; height: calc(100vh - 56px); background-color: #f9fafc; position: fixed; top: 56px; left: 0; z-index: 1040; overflow-y: auto; border-right: 1px solid #d2d6de; transition: 0.3s; }
+    .content-wrapper { margin-left: 250px; padding: 20px; margin-top: 56px; min-height: calc(100vh - 56px); }
+    @media (max-width: 768px) { #app-sidebar { left: -250px; } #app-sidebar.show { left: 0; } .content-wrapper { margin-left: 0; } }
+  </style>
+</head>
+<body>
+
+<div id="app-header"></div>
+<div id="app-sidebar"></div>
+
+<div class="content-wrapper">
+  <h4 class="mb-3 text-secondary fw-bold"><i class="bi bi-exclamation-triangle-fill text-danger me-2"></i> แบบประเมินความเสี่ยงทางคลินิก (SAVE)</h4>
+  
+  <div class="card shadow-sm border-0 border-top border-danger border-3 mb-4">
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-6 mb-2"><label class="fw-bold text-muted small">HN ผู้ป่วย</label><input type="text" id="save_hn" class="form-control"></div>
+        <div class="col-md-6 mb-2"><label class="fw-bold text-muted small">ชื่อผู้ประเมิน</label><input type="text" id="save_staff" class="form-control"></div>
+      </div>
+
+      <div class="alert alert-light border shadow-sm sticky-top" style="top: 65px; z-index: 1000;">
+        <div class="d-flex flex-wrap justify-content-between text-center fw-bold fs-6">
+          <div class="p-2">S: <span id="badge_s" class="badge bg-success">ต่ำ (0)</span></div>
+          <div class="p-2">A: <span id="badge_a" class="badge bg-success">ต่ำ (0)</span></div>
+          <div class="p-2">V: <span id="badge_v" class="badge bg-success">ต่ำ (0)</span></div>
+          <div class="p-2">E: <span id="badge_e" class="badge bg-success">ต่ำ (0)</span></div>
+        </div>
+      </div>
+
+      <div class="card mb-3 border-secondary"><div class="card-header bg-secondary text-white fw-bold">S : Suicide (แบบประเมินฆ่าตัวตาย)</div><div class="card-body">
+        <div class="fw-bold text-primary mb-2">มีแนวโน้มจะทำร้ายตนเองจากอาการทางจิต</div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="s_1" data-cat="S" data-star="true" onchange="calculateSAVE()"><label class="form-check-label">มีอาการหูแว่ว สั่งให้ทำร้ายตนเอง <span class="text-danger fw-bold">*</span></label></div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="s_2" data-cat="S" onchange="calculateSAVE()"><label class="form-check-label">หวาดกลัว หวาดระแวง</label></div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="s_3" data-cat="S" onchange="calculateSAVE()"><label class="form-check-label">หลงผิด หุนหันพลันแล่น</label></div>
+        <div class="form-check ms-3 mb-2"><input class="form-check-input save-chk" type="checkbox" value="s_4" data-cat="S" onchange="calculateSAVE()"><label class="form-check-label">ซึมเศร้า ท้อแท้</label></div>
+        
+        <div class="form-check mb-2"><input class="form-check-input save-chk" type="checkbox" value="s_5" data-cat="S" onchange="calculateSAVE()"><label class="form-check-label">ตลอดชีวิตที่ผ่านมา เคยพยายามฆ่าตัวตาย</label></div>
+        <div class="form-check mb-2"><input class="form-check-input save-chk" type="checkbox" value="s_6" data-cat="S" onchange="calculateSAVE()"><label class="form-check-label">ใน 6 เดือนที่ผ่านมา มีการสูญเสียที่สำคัญ</label></div>
+
+        <div class="fw-bold text-primary mb-2">ใน 1 เดือนที่ผ่านมา</div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="s_7" data-cat="S" onchange="calculateSAVE()"><label class="form-check-label">มีความคิดฆ่าตัวตาย</label></div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="s_8" data-cat="S" onchange="calculateSAVE()"><label class="form-check-label">มีแผนการที่จะฆ่าตัวตาย</label></div>
+        <div class="form-check ms-3 mb-2"><input class="form-check-input save-chk" type="checkbox" value="s_9" data-cat="S" data-star="true" onchange="calculateSAVE()"><label class="form-check-label">เคยพยายามฆ่าตัวตาย <span class="text-danger fw-bold">*</span></label></div>
+
+        <div class="fw-bold text-primary mb-2">ใน 1 สัปดาห์ที่ผ่านมา</div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="s_10" data-cat="S" onchange="calculateSAVE()"><label class="form-check-label">มีความคิดฆ่าตัวตาย</label></div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="s_11" data-cat="S" onchange="calculateSAVE()"><label class="form-check-label">มีแผนการที่จะฆ่าตัวตาย</label></div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="s_12" data-cat="S" data-star="true" onchange="calculateSAVE()"><label class="form-check-label">พยายามฆ่าตัวตาย <span class="text-danger fw-bold">*</span></label></div>
+      </div></div>
+      
+      <div class="card mb-3 border-warning"><div class="card-header bg-warning text-dark fw-bold">A : Accident (แบบประเมินอุบัติเหตุ)</div><div class="card-body">
+        <div class="fw-bold text-primary mb-2">การทรงตัวไม่ดี</div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="a_1" data-cat="A" onchange="calculateSAVE()"><label class="form-check-label">อายุ 60 ปีขึ้นไป/หรือมีภาวะทุพพลภาพ</label></div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="a_2" data-cat="A" onchange="calculateSAVE()"><label class="form-check-label">อยู่ระหว่างการรักษาด้วยไฟฟ้า (ECT)</label></div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="a_3" data-cat="A" onchange="calculateSAVE()"><label class="form-check-label">ได้รับยา HAD/หรือยากลุ่ม Benzodiazepine</label></div>
+        <div class="form-check ms-3 mb-2"><input class="form-check-input save-chk" type="checkbox" value="a_4" data-cat="A" data-star="true" onchange="calculateSAVE()"><label class="form-check-label">อ่อนเพลีย ง่วงซึม งุนงง สับสน อยู่นิ่งไม่นิ่ง <span class="text-danger fw-bold">*</span></label></div>
+
+        <div class="fw-bold text-primary mb-2">มีแนวโน้มที่จะได้รับอุบัติเหตุจากโรคร่วม/ภาวะทางกาย</div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="a_5" data-cat="A" onchange="calculateSAVE()"><label class="form-check-label">โรคลมชัก/สมองเสื่อม/โรคทางสมอง</label></div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="a_6" data-cat="A" onchange="calculateSAVE()"><label class="form-check-label">ภาวะถอนพิษสุรา</label></div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="a_7" data-cat="A" onchange="calculateSAVE()"><label class="form-check-label">ภาวะเพ้อ</label></div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="a_8" data-cat="A" onchange="calculateSAVE()"><label class="form-check-label">ภาวะ hypo-hypertension</label></div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="a_9" data-cat="A" onchange="calculateSAVE()"><label class="form-check-label">ภาวะ hypo-hyperglycemia</label></div>
+      </div></div>
+
+      <div class="card mb-3 border-danger"><div class="card-header bg-danger text-white fw-bold">V : Violence (พฤติกรรมรุนแรง)</div><div class="card-body">
+        <div class="form-check mb-2"><input class="form-check-input save-chk" type="checkbox" value="v_1" data-cat="V" onchange="calculateSAVE()"><label class="form-check-label">ใน 2 สัปดาห์ที่ผ่านมา มีประวัติพกพาอาวุธ/ทำลายของ/ทำร้ายผู้อื่น</label></div>
+        
+        <div class="fw-bold text-primary mb-2">ใน 2 สัปดาห์ที่ผ่านมามีแนวโน้มที่จะเกิดพฤติกรรมรุนแรงจากอาการทางจิต</div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="v_2" data-cat="V" onchange="calculateSAVE()"><label class="form-check-label">หวาดกลัว หวาดระแวง</label></div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="v_3" data-cat="V" onchange="calculateSAVE()"><label class="form-check-label">มีอาการหูแว่ว เห็นภาพหลอน</label></div>
+        <div class="form-check ms-3 mb-2"><input class="form-check-input save-chk" type="checkbox" value="v_4" data-cat="V" onchange="calculateSAVE()"><label class="form-check-label">หลงผิด หุนหันพลันแล่น</label></div>
+
+        <div class="fw-bold text-primary mb-2">พฤติกรรมก้าวร้าวรุนแรง ต่อตนเอง</div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="v_5" data-cat="V" data-star="true" onchange="calculateSAVE()"><label class="form-check-label">ทำร้ายตนเองรุนแรง <span class="text-danger fw-bold">*</span></label></div>
+        <div class="form-check ms-3 mb-2"><input class="form-check-input save-chk" type="checkbox" value="v_6" data-cat="V" onchange="calculateSAVE()"><label class="form-check-label">ขีดข่วนผิวหนัง ตีตนเอง ดึงผมโขกศีรษะ...</label></div>
+
+        <div class="fw-bold text-primary mb-2">พฤติกรรมก้าวร้าวรุนแรง ต่อผู้อื่นทั้งทาง คำพูดและการแสดงออก</div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="v_7" data-cat="V" data-star="true" onchange="calculateSAVE()"><label class="form-check-label">พูดข่มขู่จะทำร้ายผู้อื่นชัดเจน/ทำร้ายผู้อื่นจนได้รับบาดเจ็บ <span class="text-danger fw-bold">*</span></label></div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="v_8" data-cat="V" onchange="calculateSAVE()"><label class="form-check-label">ด่า ใช้ถ้อยคำหยาบคาย รุนแรง แสดงท่าทางคุกคาม</label></div>
+        <div class="form-check ms-3 mb-2"><input class="form-check-input save-chk" type="checkbox" value="v_9" data-cat="V" onchange="calculateSAVE()"><label class="form-check-label">หงุดหงิดส่งเสียงดังตะโกนด้วยความโกรธ</label></div>
+
+        <div class="fw-bold text-primary mb-2">พฤติกรรมก้าวร้าวรุนแรง ต่อทรัพย์สิน</div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="v_10" data-cat="V" data-star="true" onchange="calculateSAVE()"><label class="form-check-label">ทำสิ่งของแตกหัก กระจัดกระจาย <span class="text-danger fw-bold">*</span></label></div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="v_11" data-cat="V" onchange="calculateSAVE()"><label class="form-check-label">ขว้างปา/เตะ/ทุบวัตถุหรือสิ่งของ</label></div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="v_12" data-cat="V" onchange="calculateSAVE()"><label class="form-check-label">ปิดประตูเสียงดัง รื้อข้าวของกระจัดกระจาย</label></div>
+      </div></div>
+
+      <div class="card mb-4 border-info"><div class="card-header bg-info text-dark fw-bold">E : Escape (แบบประเมินหลบหนี)</div><div class="card-body">
+        <div class="form-check"><input class="form-check-input save-chk" type="checkbox" value="e_1" data-cat="E" onchange="calculateSAVE()"><label class="form-check-label">มีประวัติพยายามหลบหนี ปฏิเสธการเจ็บป่วย ไม่อยากอยู่ รพ.</label></div>
+        <div class="form-check"><input class="form-check-input save-chk" type="checkbox" value="e_2" data-cat="E" onchange="calculateSAVE()"><label class="form-check-label">มีประวัติติดสุรา/ยา/สารเสพติด</label></div>
+        <div class="form-check"><input class="form-check-input save-chk" type="checkbox" value="e_3" data-cat="E" onchange="calculateSAVE()"><label class="form-check-label">วิตกกังวลเกี่ยวกับภารกิจ ส่วนตัว...</label></div>
+        <div class="form-check mb-2"><input class="form-check-input save-chk" type="checkbox" value="e_4" data-cat="E" data-star="true" onchange="calculateSAVE()"><label class="form-check-label">มีพฤติกรรมพยายามหลบหนี <span class="text-danger fw-bold">*</span></label></div>
+
+        <div class="fw-bold text-primary mb-2">มีแนวโน้มที่จะหลบหนี (ข้อใดข้อหนึ่ง)</div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="e_5" data-cat="E" onchange="calculateSAVE()"><label class="form-check-label">แพทย์อนุญาตให้กลับได้ แต่ญาติไม่มารับกลับ</label></div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="e_6" data-cat="E" onchange="calculateSAVE()"><label class="form-check-label">มีแนวโน้มญาติทอดทิ้ง</label></div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="e_7" data-cat="E" onchange="calculateSAVE()"><label class="form-check-label">สับสน เดินเรื่อยเปื่อย พูดว่าจะหนี หรือหูแว่ว ภาพหลอน</label></div>
+        <div class="form-check ms-3"><input class="form-check-input save-chk" type="checkbox" value="e_8" data-cat="E" data-star="true" onchange="calculateSAVE()"><label class="form-check-label">อยากเสพสุรา/ยา/สารเสพติด <span class="text-danger fw-bold">*</span></label></div>
+      </div></div>
+
+      <div class="text-end">
+        <button class="btn btn-danger px-4 btn-lg" onclick="submitSAVE()" id="btnSubmitSAVE"><i class="bi bi-save me-1"></i> บันทึกข้อมูล SAVE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  let saveResult = { S:{score:0,level:'ต่ำ'}, A:{score:0,level:'ต่ำ'}, V:{score:0,level:'ต่ำ'}, E:{score:0,level:'ต่ำ'}, checkedItems:[], totalScore:0 };
+
+  function calculateSAVE() {
+    let scores = { S:0, A:0, V:0, E:0 }, stars = { S:false, A:false, V:false, E:false };
+    saveResult.checkedItems = [];
+
+    document.querySelectorAll('.save-chk').forEach(chk => {
+      if (chk.checked) {
+        let cat = chk.getAttribute('data-cat');
+        scores[cat] += 1;
+        if (chk.getAttribute('data-star') === 'true') stars[cat] = true;
+        saveResult.checkedItems.push(chk.value);
+      }
+    });
+
+    saveResult.totalScore = scores.S + scores.A + scores.V + scores.E;
+
+    saveResult.S.score = scores.S; saveResult.S.level = stars.S ? 'สูง (Star)' : (scores.S >= 7 ? 'สูง' : (scores.S >= 4 ? 'ปานกลาง' : 'ต่ำ'));
+    saveResult.A.score = scores.A; saveResult.A.level = stars.A ? 'สูง (Star)' : (scores.A >= 7 ? 'สูง' : (scores.A >= 4 ? 'ปานกลาง' : 'ต่ำ'));
+    saveResult.V.score = scores.V; saveResult.V.level = stars.V ? 'สูง (Star)' : (scores.V >= 9 ? 'สูง' : (scores.V >= 5 ? 'ปานกลาง' : 'ต่ำ'));
+    saveResult.E.score = scores.E; saveResult.E.level = stars.E ? 'สูง (Star)' : (scores.E >= 6 ? 'สูง' : (scores.E >= 3 ? 'ปานกลาง' : 'ต่ำ'));
+
+    updateBadge('badge_s', saveResult.S); updateBadge('badge_a', saveResult.A); updateBadge('badge_v', saveResult.V); updateBadge('badge_e', saveResult.E);
+  }
+
+  function updateBadge(id, obj) {
+    let el = document.getElementById(id);
+    el.innerText = `${obj.level} (${obj.score})`;
+    el.className = obj.level.includes('สูง') ? 'badge bg-danger' : (obj.level === 'ปานกลาง' ? 'badge bg-warning text-dark' : 'badge bg-success');
+  }
+
+  async function submitSAVE() {
+    const hn = document.getElementById('save_hn').value;
+    const staff = document.getElementById('save_staff').value;
+    if(!hn || !staff) { alert("กรุณาระบุ HN และผู้ประเมิน"); return; }
+    
+    const btn = document.getElementById('btnSubmitSAVE');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> กำลังบันทึก...';
+
+    const payload = { hn: hn, staffName: staff, S: saveResult.S, A: saveResult.A, V: saveResult.V, E: saveResult.E, checkedItems: saveResult.checkedItems, totalScore: saveResult.totalScore };
+
+    const res = await callAPI('saveSAVE', payload);
+    alert(res.message || "เกิดข้อผิดพลาด");
+    if(res.success){ 
+      document.querySelectorAll('.save-chk').forEach(c => c.checked=false); 
+      document.getElementById('save_hn').value=''; calculateSAVE(); 
+    }
+    btn.disabled = false; btn.innerHTML = '<i class="bi bi-save me-1"></i> บันทึกข้อมูล SAVE';
+  }
+</script>
+</body>
+</html>
