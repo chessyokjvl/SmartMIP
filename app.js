@@ -98,13 +98,14 @@ function renderLayout() {
   let menuHTML = `<ul class="sidebar-menu">`;
   const activeClass = (page) => currentPage === page ? 'active' : '';
 
-  // --- ส่วนที่ 1: EXECUTIVE DASHBOARDS (แยกตามกลุ่ม) ---
-  menuHTML += `<li class="header mt-2 px-3 pb-1 text-muted small fw-bold">DASHBOARD (แยกกลุ่มผู้ป่วย)</li>`;
+// --- ส่วนที่ 1: EXECUTIVE DASHBOARDS ---
+  menuHTML += `<li class="header mt-2 px-3 pb-1 text-muted small fw-bold">DASHBOARD (ภาพรวมและแยกกลุ่ม)</li>`;
+  menuHTML += `<li><a href="dashboard.html" class="nav-link text-dark py-2 border-bottom ${activeClass('dashboard.html')} fw-bold"><i class="bi bi-pie-chart-fill me-2 text-dark"></i> ภาพรวมทุกกลุ่ม (Executive)</a></li>`;
   menuHTML += `<li><a href="dashboard_mip.html" class="nav-link text-dark py-2 border-bottom ${activeClass('dashboard_mip.html')}"><i class="bi bi-speedometer2 me-2 text-primary"></i> 1. กลุ่ม MIP (F15.5)</a></li>`;
   menuHTML += `<li><a href="dashboard_schizo.html" class="nav-link text-dark py-2 border-bottom ${activeClass('dashboard_schizo.html')}"><i class="bi bi-speedometer2 me-2 text-success"></i> 2. กลุ่ม Schiz (F20)</a></li>`;
   menuHTML += `<li><a href="dashboard_general.html" class="nav-link text-dark py-2 border-bottom ${activeClass('dashboard_general.html')}"><i class="bi bi-speedometer2 me-2 text-secondary"></i> 3. กลุ่มทั่วไป (Others)</a></li>`;
-
-  // --- ส่วนที่ 2: SHARED CLINICAL TOOLS (เครื่องมือส่วนกลาง) ---
+ 
+// --- ส่วนที่ 2: SHARED CLINICAL TOOLS (เครื่องมือส่วนกลาง) ---
   if (['General', 'Admin', 'GodAdmin'].includes(role)) {
     menuHTML += `
       <li class="header mt-3 px-3 pb-1 text-muted small fw-bold">เครื่องมือปฏิบัติการทางคลินิก</li>
